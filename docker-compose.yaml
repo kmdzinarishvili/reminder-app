@@ -1,0 +1,10 @@
+services:
+  postgres:
+    image: postgres
+    container_name: wsmt-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: wsmt
+      POSTGRES_USER: wsmt
+      POSTGRES_PASSWORD: wsmt
