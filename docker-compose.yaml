@@ -1,10 +1,10 @@
 services:
   postgres:
     image: postgres
-    container_name: wsmt-postgres
+    container_name: reminders-postgres
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_DB: wsmt
-      POSTGRES_USER: wsmt
-      POSTGRES_PASSWORD: wsmt
+      POSTGRES_DB: reminderApp
+      POSTGRES_USER: keti
+      POSTGRES_PASSWORD: cKiJ3tX3@hA2
