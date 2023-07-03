@@ -1,29 +1,60 @@
 package com.lineate.mdzinarishvili.reminderapp.dao;
 
+import com.lineate.mdzinarishvili.reminderapp.enums.RecurrenceType;
+import com.lineate.mdzinarishvili.reminderapp.exceptions.InvalidInputException;
 import com.lineate.mdzinarishvili.reminderapp.models.Reminder;
 import com.lineate.mdzinarishvili.reminderapp.models.ReminderMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Component;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
-import java.util.List;
-import java.util.Optional;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.*;
 
 @Repository
 public class ReminderDAOImpl  implements  ReminderDAO{
     JdbcTemplate jdbcTemplate;
+    NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-    private final String SQL_FIND_REMINDER = "select * from reminders where reminder_id = ?";
+    private final String SQL_FIND_REMINDER = "select r.reminder_id, title, rt.recurrence_name as recurrence, r.reminder_datetime, r.attachment from reminders r " +
+            "join recurrence_types rt " +
+            "on r.recurrence_id = rt.recurrence_id " +
+            " where reminder_id = ? ";
     private final String SQL_DELETE_REMINDER = "delete from reminders where reminder_id = ?";
-    private final String SQL_UPDATE_REMINDER = "update reminders set title = ?, recurrence = ?, reminder_date  = ?, reminder_time = ?, attachment = ?, where reminder_id = ?";
-    private final String SQL_GET_ALL = "select * from reminders";
-    private final String SQL_INSERT_REMINDER = "insert into reminders(title, recurrence, reminder_date, reminder_time, attachment) values(?,?,?,?,?)";
-
+    private final String SQL_UPDATE_REMINDER = "update reminders set title = ?, recurrence_id = ?, reminder_datetime  = ?, attachment = ? where reminder_id = ?";
+    private final String SQL_GET_ALL = "select r.reminder_id, title, rt.recurrence_name as recurrence, r.reminder_datetime, r.attachment from reminders r " +
+        "join recurrence_types rt " +
+            "on r.recurrence_id = rt.recurrence_id ";
+    private final String SQL_INSERT_REMINDER = "insert into reminders(title, recurrence_id, reminder_datetime,  attachment) values(?,?,?,?)";
+    private final String SQL_GET_INSERTED_REMINDER =  "select r.reminder_id, title, rt.recurrence_name as recurrence, r.reminder_datetime, r.attachment from reminders r " +
+            "join recurrence_types rt " +
+            "on r.recurrence_id = rt.recurrence_id " +
+            " where title = ? and " +
+            " r.recurrence_id = ? and " +
+            " reminder_datetime =? and " +
+            " attachment = ?";
     @Autowired
-    public ReminderDAOImpl(DataSource dataSource) {
-        jdbcTemplate = new JdbcTemplate(dataSource);
+    public ReminderDAOImpl(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
+    }
+    private int getEnumId(RecurrenceType recurrenceType){
+        final String SQL_FIND_RECURRENCE_TYPE = "select recurrence_id from recurrence_types where recurrence_name = ?";
+        try {
+            return  jdbcTemplate.query(SQL_FIND_RECURRENCE_TYPE, (rs, rowNum) -> rs.getInt("recurrence_id"), recurrenceType.toString()).stream().findFirst().orElseThrow();
+        } catch (Throwable throwable) {
+            throw new InvalidInputException("Recurrence type invalid");
+        }
+    }
+
+    public boolean isIdValid(Long id) {
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject("SELECT EXISTS(SELECT 1 FROM reminders WHERE reminder_id = ?)", Boolean.class, id));
     }
 
     @Override
@@ -31,26 +62,48 @@ public class ReminderDAOImpl  implements  ReminderDAO{
         return jdbcTemplate.query(SQL_GET_ALL, new ReminderMapper());
     }
     @Override
-    public Optional<Reminder>  selectReminderById(Long id) {
+    public Optional<Reminder> selectReminderById(Long id) {
         List<Reminder> reminders =  jdbcTemplate.query(SQL_FIND_REMINDER, new ReminderMapper(), id);
         return reminders.stream().findFirst();
     }
 
     @Override
-    public int deleteReminderById(Long id) {
-        return jdbcTemplate.update(SQL_DELETE_REMINDER, id) ;
+    public Boolean deleteReminderById(Long id) {
+        return jdbcTemplate.update(SQL_DELETE_REMINDER, id) ==1;
     }
 
     @Override
-    public int updateReminder(Reminder reminder) {
-        return jdbcTemplate.update(SQL_UPDATE_REMINDER, reminder.getTitle(), reminder.getRecurrence().name(),
-                reminder.getDate(), reminder.getTime(), reminder.getAttachment(),
-                reminder.getId()) ;
+    public Reminder updateReminder(Reminder reminder) {
+        Integer enumId = getEnumId(reminder.getRecurrence());
+        try {
+            jdbcTemplate.update(SQL_UPDATE_REMINDER, reminder.getTitle(), enumId,
+                    reminder.getDate(), reminder.getAttachment(),
+                    reminder.getId()) ;
+            return reminder;
+        }catch (Throwable throwable){
+            throw new IllegalStateException("oops something went wrong, could not insert");
+        }
+
     }
 
     @Override
-    public int insertReminder(Reminder reminder) {
-        return jdbcTemplate.update(SQL_INSERT_REMINDER, reminder.getTitle(), reminder.getRecurrence().name(),
-                reminder.getDate(), reminder.getTime(), reminder.getAttachment()) ;
+    public Reminder insertReminder(Reminder reminder) {
+        Integer enumId = getEnumId(reminder.getRecurrence());
+        try{
+            GeneratedKeyHolder generatedKeyHolder = new GeneratedKeyHolder();
+            final String SQL_INSERT_REMINDER = "insert into reminders(title, recurrence_id, reminder_datetime,  attachment) " +
+                     "values( :title, :recurrence_id, :reminder_datetime ,:attachment )";
+            Map<String, Object> params = new HashMap<>();
+            params.put("title", reminder.getTitle());
+            params.put("recurrence_id", enumId);
+            params.put("reminder_datetime", reminder.getDate());
+            params.put("attachment", reminder.getAttachment());
+            namedParameterJdbcTemplate.update(SQL_INSERT_REMINDER, new MapSqlParameterSource(params), generatedKeyHolder, new String[] { "reminder_id" });
+            Integer id = generatedKeyHolder.getKey().intValue();
+            reminder.setId((long)id);
+            return reminder;
+        }catch (Throwable throwable){
+            throw new IllegalStateException("oops something went wrong, could not insert");
+        }
     }
 }

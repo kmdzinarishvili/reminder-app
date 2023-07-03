@@ -1,6 +1,7 @@
 package com.lineate.mdzinarishvili.reminderapp.services;
 
 import com.lineate.mdzinarishvili.reminderapp.dao.ReminderDAO;
+import com.lineate.mdzinarishvili.reminderapp.exceptions.InvalidInputException;
 import com.lineate.mdzinarishvili.reminderapp.exceptions.NotFoundException;
 import com.lineate.mdzinarishvili.reminderapp.models.Reminder;
 import org.springframework.stereotype.Service;
@@ -20,35 +21,23 @@ public class ReminderService {
         return reminderDao.selectReminders();
     }
 
-    public void addNewReminder(Reminder reminder) {
-        int result = reminderDao.insertReminder(reminder);
-        if (result != 1) {
-            throw new IllegalStateException("oops something went wrong, could not insert");
+    public Reminder addNewReminder(Reminder reminder) {
+        return reminderDao.insertReminder(reminder);
+    }
+
+    public Reminder updateReminder(Reminder reminder) {
+        if(!reminderDao.isIdValid(reminder.getId())){
+            throw new InvalidInputException("No reminder with this id");
         }
+       return reminderDao.updateReminder(reminder);
+
     }
 
-    public void updateReminder(Reminder reminder) {
-        Optional<Reminder> movies = reminderDao.selectReminderById(reminder.getId());
-        movies.ifPresentOrElse(movie -> {
-            int result = reminderDao.updateReminder(reminder);
-            if (result != 1) {
-                throw new IllegalStateException("oops could not update reminder");
-            }
-        }, () -> {
-            throw new NotFoundException(String.format("Reminder with id %s not found", reminder.getId()));
-        });
-    }
-
-    public void deleteReminder(Long id) {
-        Optional<Reminder> movies = reminderDao.selectReminderById(id);
-        movies.ifPresentOrElse(movie -> {
-            int result = reminderDao.deleteReminderById(id);
-            if (result != 1) {
-                throw new IllegalStateException("oops could not delete reminder");
-            }
-        }, () -> {
-            throw new NotFoundException(String.format("Reminder with id %s not found", id));
-        });
+    public Boolean deleteReminder(Long id) {
+        if(!reminderDao.isIdValid(id)){
+            throw new InvalidInputException("No reminder with this id");
+        }
+        return reminderDao.deleteReminderById(id);
     }
 
     public Reminder getReminder(Long id) {

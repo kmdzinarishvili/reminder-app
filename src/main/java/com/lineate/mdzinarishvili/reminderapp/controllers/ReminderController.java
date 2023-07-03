@@ -23,24 +23,24 @@ public class ReminderController {
         return reminderService.getReminders();
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     public Reminder getReminderById(@PathVariable("id") Long id) {
         return reminderService.getReminder(id);
     }
 
     @PostMapping
-    public void addMovie(@RequestBody Reminder reminder) {
-        reminderService.addNewReminder(reminder);
+    public Reminder addReminder(@RequestBody Reminder reminder) {
+        return reminderService.addNewReminder(reminder);
     }
 
-    @DeleteMapping("{id}")
-    public void deleteReminder(@PathVariable("id") Long id) {
-        reminderService.deleteReminder(id);
+    @DeleteMapping("/{id}")
+    public Boolean deleteReminder(@PathVariable("id") Long id) {
+       return reminderService.deleteReminder(id);
     }
 
-    @PostMapping("update/")
-    public void updateReminder(@RequestBody Reminder reminder) {
-        reminderService.updateReminder(reminder);
+    @PostMapping("/update")
+    public Reminder updateReminder(@RequestBody Reminder reminder) {
+        return reminderService.updateReminder(reminder);
     }
 
 }

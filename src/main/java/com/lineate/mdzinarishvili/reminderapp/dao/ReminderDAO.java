@@ -9,10 +9,11 @@ public interface ReminderDAO {
 
     List<Reminder> selectReminders();
     Optional<Reminder> selectReminderById(Long id);
-    int insertReminder(Reminder person);
-    int updateReminder(Reminder person);
+    Reminder insertReminder(Reminder person);
+    Reminder updateReminder(Reminder person);
 
-    int deleteReminderById(Long id);
+    Boolean deleteReminderById(Long id);
+    public boolean isIdValid(Long id);
 
 
 }
