@@ -1,5 +1,6 @@
 package com.lineate.mdzinarishvili.reminderapp.dao;
 
+import com.lineate.mdzinarishvili.reminderapp.enums.RoleType;
 import com.lineate.mdzinarishvili.reminderapp.models.User;
 import com.lineate.mdzinarishvili.reminderapp.models.UserMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -13,24 +14,24 @@ public class UserDaoImpl  implements  UserDao{
     private final JdbcTemplate jdbcTemplate;
 
     private final String SQL_FIND_USER = "select  u.user_id, username,  email, password, role_name as role from users u " +
-            " join roles_users ru on u.user_id = ru.user_id" +
-            " join roles r on r.role_id = ru.role_id "+
+            " join roles r on r.role_id = u.role_id "+
             " where u.user_id = ?";
-    private final String SQL_FIND_USER_BY_USERNAME =  "select * from users " +
-//            " join roles_users ru on u.user_id = ru.user_id" +
-//            " join roles r on r.role_id = ru.role_id "+
+    private final String SQL_FIND_USER_BY_USERNAME =  "select  u.user_id, username,  email, password, role_name as role  from users u" +
+            " join roles r on u.user_id = r.user_id " +
             " where username = ?";
 
     private final String SQL_DELETE_USER = "delete from users where user_id = ?";
 
     private final String SQL_UPDATE_USER = "update users set username = ?, email = ?, password  = ? where user_id = ?";
     private final String SQL_GET_ALL = "select u.user_id, username,  email, password, role_name as role from users u" +
-            " join roles_users ru on u.user_id = ru.user_id" +
-            " join roles r on r.role_id = ru.role_id ";
+            " join roles r on u.role_id = r.role_id";
 
-    private final String SQL_INSERT_USER= "insert into users(username, email, password) values(?,?,?)";
-    private final String SQL_INSERT_USER_ROLE= "insert into roles_users (user_id, role_id) " +
-            "values (?, (select role_id from roles where role_name =?))";
+    private final String SQL_INSERT_USER= "insert into users(username, email, password, role_id) values(?,?,?,?)";
+
+
+    private final String SQL_FIND_USER_BY_EMAIL = "select  u.user_id, username,  email, password, role_name as role from users u " +
+            " join roles r on r.role_id = u.role_id "+
+            " where u.email = ?";
 
     public UserDaoImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -40,7 +41,15 @@ public class UserDaoImpl  implements  UserDao{
     public List<User> selectUsers(){
         return jdbcTemplate.query(SQL_GET_ALL, new UserMapper());
     }
-
+    public User save(User user) {
+        int result = jdbcTemplate.update(SQL_INSERT_USER, user.getUsername(), user.getEmail(),
+                user.getPassword(), findRoleId(user.getRole()));
+        return this.findByEmail(user.getEmail()).get();
+    }
+    public Optional<User> findByEmail(String email){
+        List<User> users =  jdbcTemplate.query(SQL_FIND_USER_BY_EMAIL, new UserMapper(), email);
+        return users.stream().findFirst();
+    }
     @Override
     public Optional<User>  selectUserById(Long id) {
         List<User> users =  jdbcTemplate.query(SQL_FIND_USER, new UserMapper(), id);
@@ -65,15 +74,17 @@ public class UserDaoImpl  implements  UserDao{
 
     }
 
+    private int findRoleId(RoleType roleType){
+        final String SQL_FIND_RECURRENCE_TYPE = "select role_id from roles where role_name = ?";
+        return  jdbcTemplate.query(SQL_FIND_RECURRENCE_TYPE, (rs, rowNum) -> rs.getInt("role_id"), roleType.toString()).stream().findFirst().orElseThrow();
+
+    }
+
     @Override
     public Optional<User> insertUser(User user) {
-        System.out.println(user);
         int result =  jdbcTemplate.update(SQL_INSERT_USER, user.getUsername(), user.getEmail(),
-                user.getPassword());
+                user.getPassword(), findRoleId(user.getRole()));
         Long id = this.selectUserByUsername(user.getUsername()).get().getId();
-        if (result ==1 ){
-             jdbcTemplate.update(SQL_INSERT_USER_ROLE, id, user.getRole().toString());
-         }
         return this.selectUserById(id);
 
     }
