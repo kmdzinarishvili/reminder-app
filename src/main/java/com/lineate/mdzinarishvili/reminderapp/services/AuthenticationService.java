@@ -1,12 +1,14 @@
-package com.lineate.mdzinarishvili.reminderapp.auth;
+package com.lineate.mdzinarishvili.reminderapp.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.lineate.mdzinarishvili.reminderapp.config.JwtService;
+import com.lineate.mdzinarishvili.reminderapp.dto.AuthenticationRequest;
+import com.lineate.mdzinarishvili.reminderapp.dto.AuthenticationResponse;
 import com.lineate.mdzinarishvili.reminderapp.dao.UserDaoImpl;
+import com.lineate.mdzinarishvili.reminderapp.dto.RegisterRequest;
 import com.lineate.mdzinarishvili.reminderapp.models.User;
-import com.lineate.mdzinarishvili.reminderapp.token.Token;
-import com.lineate.mdzinarishvili.reminderapp.token.TokenRepository;
-import com.lineate.mdzinarishvili.reminderapp.token.TokenType;
+import com.lineate.mdzinarishvili.reminderapp.models.Token;
+import com.lineate.mdzinarishvili.reminderapp.dao.TokenDaoImpl;
+import com.lineate.mdzinarishvili.reminderapp.enums.TokenType;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +24,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class AuthenticationService {
   private final UserDaoImpl repository;
-  private final TokenRepository tokenRepository;
+  private final TokenDaoImpl tokenDaoImpl;
   private final PasswordEncoder passwordEncoder;
   private final JwtService jwtService;
   private final AuthenticationManager authenticationManager;
@@ -70,18 +72,18 @@ public class AuthenticationService {
         .expired(false)
         .revoked(false)
         .build();
-    tokenRepository.save(token);
+    tokenDaoImpl.save(token);
   }
 
   private void revokeAllUserTokens(User user) {
-    var validUserTokens = tokenRepository.findAllValidTokenByUser(user.getId());
+    var validUserTokens = tokenDaoImpl.findAllValidTokenByUser(user.getId());
     if (validUserTokens.isEmpty())
       return;
     validUserTokens.forEach(token -> {
       token.setExpired(true);
       token.setRevoked(true);
     });
-    tokenRepository.saveAll(validUserTokens);
+    tokenDaoImpl.saveAll(validUserTokens);
   }
 
   public void refreshToken(

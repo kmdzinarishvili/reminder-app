@@ -1,5 +1,6 @@
-package com.lineate.mdzinarishvili.reminderapp.token;
+package com.lineate.mdzinarishvili.reminderapp.models;
 
+import com.lineate.mdzinarishvili.reminderapp.models.Token;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
