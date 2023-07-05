@@ -1,4 +1,4 @@
-package com.lineate.mdzinarishvili.reminderapp.auth;
+package com.lineate.mdzinarishvili.reminderapp.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

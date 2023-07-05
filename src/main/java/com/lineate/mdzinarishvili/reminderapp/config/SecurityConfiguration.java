@@ -1,5 +1,6 @@
 package com.lineate.mdzinarishvili.reminderapp.config;
 
+import com.lineate.mdzinarishvili.reminderapp.auth.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

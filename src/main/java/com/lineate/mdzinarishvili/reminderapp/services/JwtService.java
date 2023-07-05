@@ -1,4 +1,4 @@
-package com.lineate.mdzinarishvili.reminderapp.config;
+package com.lineate.mdzinarishvili.reminderapp.services;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

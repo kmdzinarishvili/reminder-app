@@ -1,5 +1,9 @@
-package com.lineate.mdzinarishvili.reminderapp.auth;
+package com.lineate.mdzinarishvili.reminderapp.controllers;
 
+import com.lineate.mdzinarishvili.reminderapp.dto.AuthenticationRequest;
+import com.lineate.mdzinarishvili.reminderapp.dto.AuthenticationResponse;
+import com.lineate.mdzinarishvili.reminderapp.services.AuthenticationService;
+import com.lineate.mdzinarishvili.reminderapp.dto.RegisterRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;

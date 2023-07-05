@@ -1,6 +1,6 @@
-package com.lineate.mdzinarishvili.reminderapp.token;
+package com.lineate.mdzinarishvili.reminderapp.models;
 
-import com.lineate.mdzinarishvili.reminderapp.models.User;
+import com.lineate.mdzinarishvili.reminderapp.enums.TokenType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

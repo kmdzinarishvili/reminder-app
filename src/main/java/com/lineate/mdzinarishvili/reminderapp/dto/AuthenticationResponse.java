@@ -1,4 +1,4 @@
-package com.lineate.mdzinarishvili.reminderapp.auth;
+package com.lineate.mdzinarishvili.reminderapp.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
