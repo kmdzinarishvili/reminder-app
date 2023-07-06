@@ -1,13 +1,10 @@
 package com.lineate.mdzinarishvili.reminderapp.models;
 
+import com.lineate.mdzinarishvili.reminderapp.dto.ReminderRequest;
 import com.lineate.mdzinarishvili.reminderapp.enums.RecurrenceType;
 import lombok.*;
 
-import java.sql.Date;
-import java.sql.Time;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.Arrays;
+import java.util.Date;
 
 
 @Data
@@ -23,4 +20,10 @@ public class Reminder {
     private Date date;
     private byte[] attachment;
 
+    public Reminder(ReminderRequest reminderRequest){
+        this.title = reminderRequest.getTitle();
+        this.recurrence =reminderRequest.getRecurrence();
+        this.date = reminderRequest.getDate();
+        this.attachment = reminderRequest.getAttachment();
+    }
 }

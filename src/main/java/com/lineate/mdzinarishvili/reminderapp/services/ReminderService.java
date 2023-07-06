@@ -1,6 +1,8 @@
 package com.lineate.mdzinarishvili.reminderapp.services;
 
 import com.lineate.mdzinarishvili.reminderapp.dao.ReminderDAO;
+import com.lineate.mdzinarishvili.reminderapp.dto.ReminderRequest;
+import com.lineate.mdzinarishvili.reminderapp.dto.ReminderResponse;
 import com.lineate.mdzinarishvili.reminderapp.exceptions.InvalidInputException;
 import com.lineate.mdzinarishvili.reminderapp.exceptions.NotFoundException;
 import com.lineate.mdzinarishvili.reminderapp.models.Reminder;
@@ -21,22 +23,23 @@ public class ReminderService {
         return reminderDao.selectReminders();
     }
 
-    public Reminder addNewReminder(Reminder reminder) {
-        return reminderDao.insertReminder(reminder);
+    public ReminderResponse addNewReminder(ReminderRequest reminderRequest) {
+        return new ReminderResponse(reminderDao.insertReminder(new Reminder(reminderRequest)));
     }
 
-    public Reminder updateReminder(Reminder reminder) {
-        if(!reminderDao.isIdValid(reminder.getId())){
-            throw new InvalidInputException("No reminder with this id");
+    public ReminderResponse updateReminder(Long id, ReminderRequest reminderRequest) {
+        try {
+            Reminder reminder = new Reminder(reminderRequest);
+            reminder.setId(id);
+            return new ReminderResponse(reminderDao.updateReminder(reminder));
+        }catch (Exception e){
+            throw new IllegalStateException(e.getMessage());
+
         }
-       return reminderDao.updateReminder(reminder);
 
     }
 
     public Boolean deleteReminder(Long id) {
-        if(!reminderDao.isIdValid(id)){
-            throw new InvalidInputException("No reminder with this id");
-        }
         return reminderDao.deleteReminderById(id);
     }
 

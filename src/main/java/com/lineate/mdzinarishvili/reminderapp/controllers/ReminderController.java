@@ -1,6 +1,8 @@
 package com.lineate.mdzinarishvili.reminderapp.controllers;
 
 
+import com.lineate.mdzinarishvili.reminderapp.dto.ReminderRequest;
+import com.lineate.mdzinarishvili.reminderapp.dto.ReminderResponse;
 import com.lineate.mdzinarishvili.reminderapp.models.Reminder;
 import com.lineate.mdzinarishvili.reminderapp.services.ReminderService;
 import org.springframework.web.bind.annotation.*;
@@ -29,8 +31,8 @@ public class ReminderController {
     }
 
     @PostMapping
-    public Reminder addReminder(@RequestBody Reminder reminder) {
-        return reminderService.addNewReminder(reminder);
+    public ReminderResponse addReminder(@RequestBody ReminderRequest reminderRequest) {
+        return reminderService.addNewReminder(reminderRequest);
     }
 
     @DeleteMapping("/{id}")
@@ -38,9 +40,9 @@ public class ReminderController {
        return reminderService.deleteReminder(id);
     }
 
-    @PostMapping("/update")
-    public Reminder updateReminder(@RequestBody Reminder reminder) {
-        return reminderService.updateReminder(reminder);
+    @PostMapping("/{id}/update")
+    public ReminderResponse updateReminder(@PathVariable("id") Long id, @RequestBody ReminderRequest reminderRequest) {
+        return reminderService.updateReminder(id, reminderRequest);
     }
 
 }
