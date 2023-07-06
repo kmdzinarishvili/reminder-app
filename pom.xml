@@ -77,13 +77,6 @@
                 <groupId>org.flywaydb</groupId>
                 <artifactId>flyway-maven-plugin</artifactId>
                 <version>9.19.4</version>
-
-                <configuration>
-                    <url>jdbc:postgresql://localhost:5432/reminderApp</url>
-                    <user>keti</user>
-                    <password>cKiJ3tX3@hA2</password>
-                    <cleanDisabled>false</cleanDisabled>
-                </configuration>
             </plugin>
         </plugins>
 
