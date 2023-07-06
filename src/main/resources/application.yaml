@@ -1,9 +1,18 @@
 app:
   datasource:
-    main:
-      driver-class-name: org.postgresql.Driver
-      jdbc-url: jdbc:postgresql://localhost:5432/reminderApp
-      username: keti
-      password: 'cKiJ3tX3@hA2'
-      pool-size: 30
+      main:
+          driver-class-name: org.postgresql.Driver
+          jdbcUrl: jdbc:postgresql://localhost:5432/reminderApp
+          username: keti
+          password: 'cKiJ3tX3@hA2'
+          pool-size: 30
 
+spring:
+    datasource:
+        driver-class-name: org.postgresql.Driver
+        url: jdbc:postgresql://localhost:5432/reminderApp
+        username: keti
+        password: 'cKiJ3tX3@hA2'
+    flyway:
+        enabled: true
+        validate-on-migrate: true
