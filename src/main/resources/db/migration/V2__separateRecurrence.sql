@@ -13,3 +13,6 @@ insert into recurrence_types(recurrence_name)
 alter table reminders drop column reminder_date;
 alter table reminders drop column reminder_time;
 alter table reminders add column reminder_datetime timestamp;
+
+alter table users add column email varchar(50);
+alter table users add constraint unique_email unique(email);
