@@ -1,7 +1,7 @@
 services:
-  db:
+  postgres:
     image: postgres
-    container_name: db
+    container_name: reminders-postgres
     ports:
       - "5432:5432"
     environment:
