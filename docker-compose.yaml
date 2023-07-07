@@ -1,10 +1,23 @@
 services:
-  postgres:
+  db:
     image: postgres
-    container_name: reminders-postgres
+    container_name: db
     ports:
       - "5432:5432"
     environment:
       POSTGRES_DB: reminderApp
       POSTGRES_USER: keti
       POSTGRES_PASSWORD: cKiJ3tX3@hA2
+  api:
+    container_name: api
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      - spring.datasource.url=jdbc:postgresql://db:5432/reminderApp
+      - spring.datasource.username=keti
+      - spring.datasource.password=cKiJ3tX3@hA2
+      - server.port = 8080
+      - spring.datasource.driver-class-name=org.postgresql.Driver
+    depends_on:
+      - db
