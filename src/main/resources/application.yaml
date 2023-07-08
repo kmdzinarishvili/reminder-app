@@ -1,8 +1,16 @@
 app:
   datasource:
-      main:
-          driver-class-name: org.postgresql.Driver
-          jdbcUrl: jdbc:postgresql://db:5432/reminderApp
-          username: keti
-          password: 'cKiJ3tX3@hA2'
-          pool-size: 30
+    main:
+      driver-class-name: org.postgresql.Driver
+      jdbc-url: jdbc:postgresql://localhost:5432/reminderApp
+      username: keti
+      password: 'cKiJ3tX3@hA2'
+      pool-size: 30
+
+application:
+  security:
+    jwt:
+      secret-key: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+      expiration: 86400000 # a day
+      refresh-token:
+        expiration: 604800000 # 7 days
