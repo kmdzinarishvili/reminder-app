@@ -56,6 +56,12 @@
             <version>9.19.4</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.28</version>
+            <scope>provided</scope>
+        </dependency>
 
 
     </dependencies>
@@ -71,16 +77,6 @@
                 <groupId>org.flywaydb</groupId>
                 <artifactId>flyway-maven-plugin</artifactId>
                 <version>9.19.4</version>
-
-                <configuration>
-                    <url>jdbc:postgresql://localhost:5432/</url>
-                    <user>wsmt</user>
-                    <password>wsmt</password>
-                    <schemas>
-                        <schema>wsmt</schema>
-                    </schemas>
-                    <cleanDisabled>false</cleanDisabled>
-                </configuration>
             </plugin>
         </plugins>
 

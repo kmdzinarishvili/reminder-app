@@ -1,0 +1,8 @@
+app:
+  datasource:
+      main:
+          driver-class-name: org.postgresql.Driver
+          jdbcUrl: jdbc:postgresql://db:5432/reminderApp
+          username: keti
+          password: 'cKiJ3tX3@hA2'
+          pool-size: 30
