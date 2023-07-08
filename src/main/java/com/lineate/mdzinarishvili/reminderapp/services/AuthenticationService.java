@@ -23,7 +23,7 @@ import java.io.IOException;
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
-  private final UserDaoImpl repository;
+  private final UserDaoImpl userDao;
   private final TokenDaoImpl tokenDaoImpl;
   private final PasswordEncoder passwordEncoder;
   private final JwtService jwtService;
@@ -36,7 +36,7 @@ public class AuthenticationService {
         .password(passwordEncoder.encode(request.getPassword()))
         .role(request.getRole())
         .build();
-    var savedUser = repository.save(user);
+    var savedUser = userDao.save(user);
     var jwtToken = jwtService.generateToken(user);
     var refreshToken = jwtService.generateRefreshToken(user);
     saveUserToken(savedUser, jwtToken);
@@ -53,7 +53,7 @@ public class AuthenticationService {
             request.getPassword()
         )
     );
-    var user = repository.findByEmail(request.getEmail()).orElseThrow();
+    var user = userDao.findByEmail(request.getEmail()).orElseThrow();
     var jwtToken = jwtService.generateToken(user);
     var refreshToken = jwtService.generateRefreshToken(user);
     revokeAllUserTokens(user);
@@ -99,7 +99,7 @@ public class AuthenticationService {
     refreshToken = authHeader.substring(7);
     userEmail = jwtService.extractUsername(refreshToken);
     if (userEmail != null) {
-      var user = this.repository.findByEmail(userEmail).orElseThrow();
+      var user = this.userDao.findByEmail(userEmail).orElseThrow();
       if (jwtService.isTokenValid(refreshToken, user)) {
         var accessToken = jwtService.generateToken(user);
         revokeAllUserTokens(user);

@@ -10,14 +10,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-//@Entity
 public class Token {
 
-//  @Id
-//  @GeneratedValue
   public Long id;
 
-//  @Column(unique = true)
   public String token;
 
 //  @Enumerated(EnumType.STRING)
@@ -28,16 +24,14 @@ public class Token {
 
   public boolean expired;
 
-
-//  @ManyToOne(fetch = FetchType.LAZY)
-//  @JoinColumn(name = "user_id")
   public User user;
 
-  public Token (Long id, String token, boolean revoked, boolean expired){
+  public Token (Long id, String token, boolean revoked, boolean expired, User user){
     this.id = id;
     this.token=token;
     this.revoked = revoked;
     this.expired = expired;
+    this.user = user;
   }
 
 }
