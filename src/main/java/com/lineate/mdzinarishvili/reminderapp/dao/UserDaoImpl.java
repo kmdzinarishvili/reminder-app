@@ -34,7 +34,7 @@ public class UserDaoImpl implements UserDao {
   private final String SQL_FIND_USER_BY_USERNAME =
       "select  u.user_id, username,  email, password, registration_date," +
           " activity_date, timezone_offset_hours, days_before_reminder_delete, role_name as role  from users u" +
-          " join roles r on u.user_id = r.user_id " +
+          " join roles r on u.role_id = r.role_id " +
           " where username = ?";
   private final String SQL_DELETE_USER = "delete from users where user_id = ?";
   private final String SQL_UPDATE_USER =

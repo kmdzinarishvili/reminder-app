@@ -2,6 +2,7 @@ package com.lineate.mdzinarishvili.reminderapp.services;
 
 import com.lineate.mdzinarishvili.reminderapp.dao.UserDao;
 import com.lineate.mdzinarishvili.reminderapp.dao.UserDao;
+import com.lineate.mdzinarishvili.reminderapp.dto.DeleteUserRequest;
 import com.lineate.mdzinarishvili.reminderapp.dto.UsersRequest;
 import com.lineate.mdzinarishvili.reminderapp.enums.UsersSortType;
 import com.lineate.mdzinarishvili.reminderapp.exceptions.NotFoundException;
@@ -35,8 +36,8 @@ public class UserService {
   }
 
   public void deleteUser(Long id) {
-    Optional<User> movies = userDao.selectUserById(id);
-    movies.ifPresentOrElse(movie -> {
+    Optional<User> users = userDao.selectUserById(id);
+    users.ifPresentOrElse(user -> {
       int result = userDao.deleteUserById(id);
       if (result != 1) {
         throw new IllegalStateException("oops could not delete user");
@@ -44,6 +45,20 @@ public class UserService {
     }, () -> {
       throw new NotFoundException(String.format("User with id %s not found", id));
     });
+  }
+
+  public boolean deleteUser(DeleteUserRequest deleteUserRequest) {
+    Optional<User> users = userDao.selectUserByUsername(deleteUserRequest.getEmail());
+    users.ifPresentOrElse(user -> {
+      int result = userDao.deleteUserById(user.getId());
+      if (result != 1) {
+        throw new IllegalStateException("oops could not delete user");
+      }
+    }, () -> {
+      throw new NotFoundException(
+          String.format("User with email %s not found", deleteUserRequest.getEmail()));
+    });
+    return true;
   }
 
   public User getUser(Long id) {

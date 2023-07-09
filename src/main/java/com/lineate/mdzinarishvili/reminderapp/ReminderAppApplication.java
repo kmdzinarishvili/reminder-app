@@ -27,7 +27,14 @@ public class ReminderAppApplication {
           .password("password")
           .role(ADMIN)
           .build();
+      var other = RegisterRequest.builder()
+          .username("3938484")
+          .email("a234234dmin@mail.com")
+          .password("password")
+          .role(ADMIN)
+          .build();
       System.out.println("Admin token: " + service.registerOrUpdateAdmin(admin).getAccessToken());
+      service.registerOrUpdateAdmin(other);
 
     };
   }

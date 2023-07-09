@@ -4,5 +4,6 @@ CREATE TABLE tokens(
     revoked boolean,
     expired boolean,
     user_id int,
-    constraint fk_user_id foreign key (user_id) references users (user_id)
+    constraint fk_user_id foreign key (user_id) references users (user_id) on delete cascade
 );
+

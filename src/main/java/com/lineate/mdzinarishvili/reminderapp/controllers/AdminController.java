@@ -1,6 +1,7 @@
 package com.lineate.mdzinarishvili.reminderapp.controllers;
 
 import com.lineate.mdzinarishvili.reminderapp.dao.UserDaoImpl;
+import com.lineate.mdzinarishvili.reminderapp.dto.DeleteUserRequest;
 import com.lineate.mdzinarishvili.reminderapp.dto.UsersRequest;
 import com.lineate.mdzinarishvili.reminderapp.models.User;
 import com.lineate.mdzinarishvili.reminderapp.services.ReminderService;
@@ -31,13 +32,13 @@ public class AdminController {
   }
 
   @GetMapping
-  public List<User> getUsers(UsersRequest usersRequest) {
+  public List<User> getUsers(@RequestBody UsersRequest usersRequest) {
     return userService.getUsers(usersRequest);
   }
 
   @DeleteMapping
-  public String delete() {
-    return "DELETE:: admin controller";
+  public boolean delete(@RequestBody DeleteUserRequest deleteUserRequest) {
+    return userService.deleteUser(deleteUserRequest);
   }
 
 }
