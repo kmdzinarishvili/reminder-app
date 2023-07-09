@@ -1,5 +1,4 @@
 
-alter table users add column  email VARCHAR(45) NOT NULL;
 alter table users add constraint  email_unique UNIQUE (email);
 CREATE TABLE roles (
   role_id SERIAL PRIMARY KEY,

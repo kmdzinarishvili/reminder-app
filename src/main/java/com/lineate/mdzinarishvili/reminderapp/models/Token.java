@@ -18,12 +18,11 @@ public class Token {
   public boolean expired;
   public User user;
 
-  public Token(Long id, String token, boolean revoked, boolean expired, User user) {
+  public Token(Long id, String token, boolean revoked, boolean expired) {
     this.id = id;
     this.token = token;
     this.revoked = revoked;
     this.expired = expired;
-    this.user = user;
   }
 
 }

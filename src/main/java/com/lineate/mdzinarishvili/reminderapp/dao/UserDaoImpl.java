@@ -1,9 +1,15 @@
 package com.lineate.mdzinarishvili.reminderapp.dao;
 
 import com.lineate.mdzinarishvili.reminderapp.enums.RoleType;
+import com.lineate.mdzinarishvili.reminderapp.enums.UsersSortType;
 import com.lineate.mdzinarishvili.reminderapp.models.User;
 import com.lineate.mdzinarishvili.reminderapp.models.UserMapper;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.NoSuchElementException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -12,40 +18,68 @@ import java.util.Optional;
 @Repository
 public class UserDaoImpl implements UserDao {
   private final JdbcTemplate jdbcTemplate;
+  private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
+  public UserDaoImpl(JdbcTemplate jdbcTemplate,
+                     NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
+    this.jdbcTemplate = jdbcTemplate;
+    this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
+  }
+
   private final String SQL_FIND_USER =
-      "select  u.user_id, username,  email, password, role_name as role from users u " +
+      "select  u.user_id, username,  email, password, registration_date, " +
+          " activity_date, timezone_offset_hours, days_before_reminder_delete, role_name as role from users u " +
           " join roles r on r.role_id = u.role_id " +
           " where u.user_id = ?";
   private final String SQL_FIND_USER_BY_USERNAME =
-      "select  u.user_id, username,  email, password, role_name as role  from users u" +
+      "select  u.user_id, username,  email, password, registration_date," +
+          " activity_date, timezone_offset_hours, days_before_reminder_delete, role_name as role  from users u" +
           " join roles r on u.user_id = r.user_id " +
           " where username = ?";
   private final String SQL_DELETE_USER = "delete from users where user_id = ?";
   private final String SQL_UPDATE_USER =
-      "update users set username = ?, email = ?, password  = ? where user_id = ?";
+      "update users set username = ?, password  = ?, timezone_offset_hours = ? where user_id = ?";
   private final String SQL_GET_ALL =
-      "select u.user_id, username,  email, password, role_name as role from users u" +
-          " join roles r on u.role_id = r.role_id";
+      "select u.user_id, username,  email, password, registration_date, " +
+          " activity_date, timezone_offset_hours, days_before_reminder_delete, " +
+          " role_name as role from users u" +
+          " join roles r on u.role_id = r.role_id" +
+          " order by " +
+          " CASE WHEN :sortType = 'LOGIN' THEN username END, " +
+          " CASE WHEN :sortType = 'REGISTRATION_DATE' THEN registration_date END," +
+          " CASE  WHEN :sortType = 'LAST_ACTIVITY' THEN activity_date END";
+
   private final String SQL_INSERT_USER =
-      "insert into users(username, email, password, role_id) values(?,?,?,?)";
+      "insert into users(username, email, password, timezone_offset_hours, role_id) values(?,?,?,?,?)";
   private final String SQL_FIND_USER_BY_EMAIL =
-      "select  u.user_id, username,  email, password, role_name as role from users u " +
+      "select  u.user_id, username,  email, password, registration_date, " +
+          "activity_date, timezone_offset_hours, days_before_reminder_delete, role_name as role from users u " +
           " join roles r on r.role_id = u.role_id " +
           " where u.email = ?";
 
-  public UserDaoImpl(JdbcTemplate jdbcTemplate) {
-    this.jdbcTemplate = jdbcTemplate;
-  }
 
   @Override
-  public List<User> selectUsers() {
-    return jdbcTemplate.query(SQL_GET_ALL, new UserMapper());
+  public List<User> selectUsers(String sortType) {
+    Map<String, Object> params = new HashMap<>();
+    params.put("sortType", sortType);
+    return namedParameterJdbcTemplate.query(SQL_GET_ALL, new MapSqlParameterSource(params),
+        new UserMapper());
   }
 
   public User save(User user) {
     int result = jdbcTemplate.update(SQL_INSERT_USER, user.getUsername(), user.getEmail(),
-        user.getPassword(), findRoleId(user.getRole()));
+        user.getPassword(), user.getTimezoneOffsetHours(), findRoleId(user.getRole()));
     return this.findByEmail(user.getEmail()).get();
+  }
+
+  public User insertOrUpdate(User user) {
+    try {
+      return updateUser(findByEmail(user.getEmail()).get()).get();
+    } catch (NoSuchElementException exception) {
+      jdbcTemplate.update(SQL_INSERT_USER, user.getUsername(), user.getEmail(),
+          user.getPassword(), user.getTimezoneOffsetHours(), findRoleId(user.getRole()));
+      return this.findByEmail(user.getEmail()).get();
+    }
   }
 
   public Optional<User> findByEmail(String email) {
@@ -72,8 +106,9 @@ public class UserDaoImpl implements UserDao {
 
   @Override
   public Optional<User> updateUser(User user) {
-    jdbcTemplate.update(SQL_UPDATE_USER, user.getUsername(), user.getEmail(),
-        user.getPassword(), user.getId()); // can't update role
+    jdbcTemplate.update(SQL_UPDATE_USER, user.getUsername(),
+        user.getPassword(), user.getTimezoneOffsetHours(),
+        user.getId()); // can't update role or email
     return this.selectUserById(user.getId());
   }
 

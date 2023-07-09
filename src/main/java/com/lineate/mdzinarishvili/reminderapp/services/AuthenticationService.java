@@ -46,6 +46,23 @@ public class AuthenticationService {
         .build();
   }
 
+  public AuthenticationResponse registerOrUpdateAdmin(RegisterRequest request) {
+    var user = User.builder()
+        .username(request.getUsername())
+        .email(request.getEmail())
+        .password(passwordEncoder.encode(request.getPassword()))
+        .role(request.getRole())
+        .build();
+    var savedUser = userDao.insertOrUpdate(user);
+    var jwtToken = jwtService.generateToken(user);
+    var refreshToken = jwtService.generateRefreshToken(user);
+    saveUserToken(savedUser, jwtToken);
+    return AuthenticationResponse.builder()
+        .accessToken(jwtToken)
+        .refreshToken(refreshToken)
+        .build();
+  }
+
   public AuthenticationResponse authenticate(AuthenticationRequest request) {
     authenticationManager.authenticate(
         new UsernamePasswordAuthenticationToken(

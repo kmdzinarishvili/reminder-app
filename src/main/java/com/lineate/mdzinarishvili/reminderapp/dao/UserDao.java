@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserDao {
-  List<User> selectUsers();
+  List<User> selectUsers(String sortType);
 
   Optional<User> selectUserById(Long id);
 

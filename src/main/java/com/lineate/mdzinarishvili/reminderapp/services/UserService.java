@@ -2,6 +2,8 @@ package com.lineate.mdzinarishvili.reminderapp.services;
 
 import com.lineate.mdzinarishvili.reminderapp.dao.UserDao;
 import com.lineate.mdzinarishvili.reminderapp.dao.UserDao;
+import com.lineate.mdzinarishvili.reminderapp.dto.UsersRequest;
+import com.lineate.mdzinarishvili.reminderapp.enums.UsersSortType;
 import com.lineate.mdzinarishvili.reminderapp.exceptions.NotFoundException;
 import com.lineate.mdzinarishvili.reminderapp.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +20,9 @@ public class UserService {
     this.userDao = userDao;
   }
 
-  public List<User> getUsers() {
-    return userDao.selectUsers();
+  public List<User> getUsers(UsersRequest usersRequest) {
+    System.out.println("USERS REQUWST" + usersRequest);
+    return userDao.selectUsers(usersRequest.getUsersSortType());
   }
 
   public User addNewUser(User user) {

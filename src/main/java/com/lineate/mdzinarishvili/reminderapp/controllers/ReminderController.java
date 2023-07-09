@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping(path = "reminders")
+@RequestMapping(path = "/api/v1/reminders")
 
 public class ReminderController {
   private final ReminderService reminderService;

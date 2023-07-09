@@ -14,9 +14,8 @@ public class TokenDaoImpl implements TokenDao {
   private final JdbcTemplate jdbcTemplate;
 
   private final String SQL_FIND_TOKEN = "select t.token_id, t.token_value, t.revoked, " +
-      "t.expired, u.user_id, u.username, u.password, u.email, r.role_name as role from tokens t " +
-      " join users u on t.user_id = u.user_id " +
-      " join roles r on u.role_id = r.role_id where token_value = ? ";
+      "t.expired, t.user_id from tokens t " +
+      " where token_value = ? ";
   private final String SQL_ALL_VALID_TOKENS_BY_USER = "select t from tokens t inner join users " +
       " on t.user.id = u.id" +
       " where u.id = ? and (t.expired = false or t.revoked = false)";
