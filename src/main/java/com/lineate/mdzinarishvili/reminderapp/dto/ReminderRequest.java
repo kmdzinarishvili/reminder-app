@@ -12,8 +12,8 @@ import java.util.Date;
 @Setter
 @ToString
 public class ReminderRequest {
-    private String title;
-    private RecurrenceType recurrence;
-    private Date date;
-    private byte[] attachment;
+  private String title;
+  private RecurrenceType recurrence;
+  private Date date;
+  private byte[] attachment;
 }

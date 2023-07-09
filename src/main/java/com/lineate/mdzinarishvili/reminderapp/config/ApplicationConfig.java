@@ -16,7 +16,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Configuration
 @RequiredArgsConstructor
 public class ApplicationConfig {
-
   private final UserDaoImpl repository;
 
   @Bean
@@ -34,7 +33,8 @@ public class ApplicationConfig {
   }
 
   @Bean
-  public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+  public AuthenticationManager authenticationManager(AuthenticationConfiguration config)
+      throws Exception {
     return config.getAuthenticationManager();
   }
 

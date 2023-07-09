@@ -6,12 +6,15 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserDao {
-    List<User> selectUsers();
-    Optional<User> selectUserById(Long id);
-    Optional<User> selectUserByUsername(String username);
-    Optional<User> updateUser(User user);
+  List<User> selectUsers();
 
-    int deleteUserById(Long id);
+  Optional<User> selectUserById(Long id);
 
-    Optional<User> insertUser(User user);
+  Optional<User> selectUserByUsername(String username);
+
+  Optional<User> updateUser(User user);
+
+  int deleteUserById(Long id);
+
+  Optional<User> insertUser(User user);
 }

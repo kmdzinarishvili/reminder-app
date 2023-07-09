@@ -13,12 +13,13 @@ import java.util.Date;
 @Setter
 @ToString
 public class ReminderResponse {
-    private String title;
-    private Date date;
-    private byte[] attachment;
-    public ReminderResponse(Reminder reminder){
-        this.title = reminder.getTitle();
-        this.date = reminder.getDate();
-        this.attachment = reminder.getAttachment();
-    }
+  private String title;
+  private Date date;
+  private byte[] attachment;
+
+  public ReminderResponse(Reminder reminder) {
+    this.title = reminder.getTitle();
+    this.date = reminder.getDate();
+    this.attachment = reminder.getAttachment();
+  }
 }

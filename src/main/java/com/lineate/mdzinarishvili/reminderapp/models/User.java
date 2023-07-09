@@ -19,24 +19,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 @AllArgsConstructor
 
 public class User implements UserDetails {
-
     private Long id;
     private String username;
     private String email;
     private String password;
-
-    public User(Long id, String username, String email, String password) {
-        this.id = id;
-        this.username = username;
-        this.email = email;
-        this.password = password;
-    }
-
     private RoleType role;
-
-//  private List<Token> tokens;
-
-
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

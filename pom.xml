@@ -63,8 +63,6 @@
             <version>9.19.4</version>
         </dependency>
 
-<<<<<<< HEAD
-=======
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-api</artifactId>
@@ -93,8 +91,6 @@
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
             <version>2.1.0</version>
         </dependency>
-
->>>>>>> f982838 (initial login/registration functionality (needs refactoring))
     </dependencies>
 
     <build>

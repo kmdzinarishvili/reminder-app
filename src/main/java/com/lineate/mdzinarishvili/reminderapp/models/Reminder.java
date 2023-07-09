@@ -14,16 +14,16 @@ import java.util.Date;
 @Setter
 @ToString
 public class Reminder {
-    private Long id;
-    private String title;
-    private RecurrenceType recurrence;
-    private Date date;
-    private byte[] attachment;
+  private Long id;
+  private String title;
+  private RecurrenceType recurrence;
+  private Date date;
+  private byte[] attachment;
 
-    public Reminder(ReminderRequest reminderRequest){
-        this.title = reminderRequest.getTitle();
-        this.recurrence =reminderRequest.getRecurrence();
-        this.date = reminderRequest.getDate();
-        this.attachment = reminderRequest.getAttachment();
-    }
+  public Reminder(ReminderRequest reminderRequest) {
+    this.title = reminderRequest.getTitle();
+    this.recurrence = reminderRequest.getRecurrence();
+    this.date = reminderRequest.getDate();
+    this.attachment = reminderRequest.getAttachment();
+  }
 }
