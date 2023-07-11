@@ -2,6 +2,8 @@ package com.lineate.mdzinarishvili.reminderapp.dto;
 
 
 import com.lineate.mdzinarishvili.reminderapp.models.Reminder;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import lombok.*;
 
 import java.util.Date;
@@ -14,7 +16,7 @@ import java.util.Date;
 @ToString
 public class ReminderResponse {
   private String title;
-  private Date date;
+  private LocalDateTime date;
   private byte[] attachment;
 
   public ReminderResponse(Reminder reminder) {

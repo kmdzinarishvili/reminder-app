@@ -1,9 +1,8 @@
 package com.lineate.mdzinarishvili.reminderapp.dto;
 
 import com.lineate.mdzinarishvili.reminderapp.enums.RecurrenceType;
+import java.time.LocalDateTime;
 import lombok.*;
-
-import java.util.Date;
 
 @Data
 @AllArgsConstructor
@@ -14,6 +13,6 @@ import java.util.Date;
 public class ReminderRequest {
   private String title;
   private RecurrenceType recurrence;
-  private Date date;
+  private LocalDateTime date;
   private byte[] attachment;
 }
