@@ -1,5 +1,8 @@
 package com.lineate.mdzinarishvili.reminderapp.dao;
 
+import com.lineate.mdzinarishvili.reminderapp.enums.ReminderOrderType;
+import com.lineate.mdzinarishvili.reminderapp.enums.TimePeriod;
+import com.lineate.mdzinarishvili.reminderapp.models.Label;
 import com.lineate.mdzinarishvili.reminderapp.models.Reminder;
 
 import java.util.List;
@@ -10,12 +13,18 @@ public interface ReminderDAO {
 
   Optional<Reminder> selectReminderById(Long id);
 
-  Reminder insertReminder(Reminder person);
+  Reminder insertReminder(Reminder reminder);
 
-  Reminder updateReminder(Reminder person);
+  Reminder updateReminder(Reminder reminder);
 
   Boolean deleteReminderById(Long id);
 
-  public boolean isIdValid(Long id);
+  boolean isIdValid(Long id);
+
+  Label getLabelByName(String labelName);
+
+  //TO DO: implement select Overdue Reminders
+  //List<Reminder> selectOverdueReminders();
+
 
 }

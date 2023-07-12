@@ -4,7 +4,6 @@ package com.lineate.mdzinarishvili.reminderapp.controllers;
 import com.lineate.mdzinarishvili.reminderapp.dto.GetRemindersRequest;
 import com.lineate.mdzinarishvili.reminderapp.dto.ReminderRequest;
 import com.lineate.mdzinarishvili.reminderapp.dto.ReminderResponse;
-import com.lineate.mdzinarishvili.reminderapp.enums.TimePeriod;
 import com.lineate.mdzinarishvili.reminderapp.models.Reminder;
 import com.lineate.mdzinarishvili.reminderapp.services.ReminderService;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -53,11 +52,11 @@ public class ReminderController {
     return reminderService.deleteReminder(id);
   }
 
-  @PostMapping("/{id}/update")
-  public ReminderResponse updateReminder(@PathVariable("id") Long id,
-                                         @RequestBody ReminderRequest reminderRequest) {
-    return reminderService.updateReminder(id, reminderRequest);
-  }
+//  @PostMapping("/{id}/update")
+//  public ReminderResponse updateReminder(@PathVariable("id") Long id,
+//                                         @RequestBody ReminderRequest reminderRequest) {
+//    return reminderService.updateReminder(id, reminderRequest);
+//  }
 
 
 }

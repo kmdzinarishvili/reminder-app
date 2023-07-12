@@ -1,37 +1,37 @@
 package com.lineate.mdzinarishvili.reminderapp.services;
 
-import static com.lineate.mdzinarishvili.reminderapp.enums.TimePeriod.TOMORROW;
-import static com.lineate.mdzinarishvili.reminderapp.enums.TimePeriod.WEEK;
-
 import com.lineate.mdzinarishvili.reminderapp.dao.ReminderDAO;
+import com.lineate.mdzinarishvili.reminderapp.dao.UserDao;
 import com.lineate.mdzinarishvili.reminderapp.dto.GetRemindersRequest;
 import com.lineate.mdzinarishvili.reminderapp.dto.ReminderRequest;
 import com.lineate.mdzinarishvili.reminderapp.dto.ReminderResponse;
 import com.lineate.mdzinarishvili.reminderapp.enums.TimePeriod;
 import com.lineate.mdzinarishvili.reminderapp.exceptions.InvalidInputException;
 import com.lineate.mdzinarishvili.reminderapp.exceptions.NotFoundException;
+import com.lineate.mdzinarishvili.reminderapp.models.Label;
 import com.lineate.mdzinarishvili.reminderapp.models.Reminder;
 import com.lineate.mdzinarishvili.reminderapp.models.User;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ReminderService {
   private final ReminderDAO reminderDao;
+  private final UserDao userDao;
 
-  public ReminderService(ReminderDAO reminderDao) {
+  public ReminderService(ReminderDAO reminderDao, UserDao userDao) {
     this.reminderDao = reminderDao;
+    this.userDao = userDao;
   }
 
   public List<Reminder> getReminders() {
     return reminderDao.selectReminders();
+
   }
 
   public List<Reminder> getOldReminders() {
@@ -115,7 +115,6 @@ public class ReminderService {
           break;
       }
     });
-    Collections.sort(dateReminders);
     return dateReminders;
   }
 
@@ -179,7 +178,35 @@ public class ReminderService {
   }
 
   public ReminderResponse addNewReminder(ReminderRequest reminderRequest) {
-    return new ReminderResponse(reminderDao.insertReminder(new Reminder(reminderRequest)));
+    Reminder reminder = new Reminder(reminderRequest);
+    if (reminderRequest.getUserEmail() == null && reminderRequest.getUserUsername() == null) {
+      User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+      reminder.setUser(user);
+      reminder.setAcceptanceStatus(true);
+    } else {
+      if (reminderRequest.getUserUsername() != null) {
+        var user = userDao.selectUserByUsername(reminderRequest.getUserUsername());
+        if (user.isPresent()) {
+          reminder.setUser(user.get());
+        } else {
+          throw new InvalidInputException("User with username not found");
+        }
+      } else {
+        var user = userDao.findByEmail(reminderRequest.getUserEmail());
+        if (user.isPresent()) {
+          reminder.setUser(user.get());
+        } else {
+          throw new InvalidInputException("User with email not found");
+        }
+      }
+      reminder.setAcceptanceStatus(false);
+    }
+    List<Label> labels = new ArrayList<>();
+    reminderRequest.getLabels().forEach(label -> {
+      labels.add(reminderDao.getLabelByName(label));
+    });
+    reminder.setLabels(labels);
+    return new ReminderResponse(reminderDao.insertReminder(reminder));
   }
 
   public ReminderResponse updateReminder(Long id, ReminderRequest reminderRequest) {
