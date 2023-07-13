@@ -52,6 +52,17 @@ public class ReminderController {
     return reminderService.deleteReminder(id);
   }
 
+  @PostMapping("/{id}/reject")
+  public Boolean rejectReminder(@PathVariable("id") Long id) {
+    return reminderService.rejectReminder(id);
+  }
+
+  @PostMapping("/{id}/accept")
+  public Boolean acceptReminder(@PathVariable("id") Long id) {
+    return reminderService.acceptReminder(id);
+  }
+
+
 //  @PostMapping("/{id}/update")
 //  public ReminderResponse updateReminder(@PathVariable("id") Long id,
 //                                         @RequestBody ReminderRequest reminderRequest) {

@@ -179,4 +179,25 @@ public class ReminderDAOImpl implements ReminderDAO {
     }
   }
 
+  public boolean isPending(Long id) {
+    Reminder reminder;
+    try {
+      reminder = selectReminderById(id).get();
+    } catch (Exception e) {
+      throw new InvalidInputException("Reminder with id not found");
+    }
+    return !reminder.getAcceptanceStatus();
+  }
+
+  public boolean setAcceptedTrue(Long id) {
+    try {
+      selectReminderById(id).get();
+    } catch (Exception e) {
+      throw new InvalidInputException("Reminder with id not found");
+    }
+    final String SQL_SET_ACCEPTANCE =
+        "update reminders set acceptance_status=TRUE where reminder_id = ?";
+    return jdbcTemplate.update(SQL_SET_ACCEPTANCE, id) == 1;
+  }
+
 }

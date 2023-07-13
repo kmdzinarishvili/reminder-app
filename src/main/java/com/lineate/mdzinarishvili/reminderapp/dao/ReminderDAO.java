@@ -23,6 +23,10 @@ public interface ReminderDAO {
 
   Label getLabelByName(String labelName);
 
+  boolean isPending(Long id);
+
+  boolean setAcceptedTrue(Long id);
+
   //TO DO: implement select Overdue Reminders
   //List<Reminder> selectOverdueReminders();
 

@@ -225,6 +225,23 @@ public class ReminderService {
     return reminderDao.deleteReminderById(id);
   }
 
+  public Boolean rejectReminder(Long id) {
+    if (reminderDao.isPending(id)) {
+      return reminderDao.deleteReminderById(id);
+    } else {
+      throw new InvalidInputException("This reminder is not pending, cannot be rejected.");
+    }
+  }
+
+  public Boolean acceptReminder(Long id) {
+    if (reminderDao.isPending(id)) {
+      return reminderDao.setAcceptedTrue(id);
+    } else {
+      throw new InvalidInputException("This reminder is not pending, cannot be rejected.");
+    }
+  }
+
+
   public Reminder getReminder(Long id) {
     return reminderDao.selectReminderById(id)
         .orElseThrow(
