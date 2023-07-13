@@ -30,6 +30,10 @@ public class User implements UserDetails {
   private float timezoneOffsetHours;
   private int daysBeforeReminderDelete;
 
+  public User(Long id) {
+    this.id = id;
+  }
+
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -39,11 +43,6 @@ public class User implements UserDetails {
   @Override
   public String getPassword() {
     return password;
-  }
-
-  @Override
-  public String getUsername() {
-    return email;
   }
 
   @Override
