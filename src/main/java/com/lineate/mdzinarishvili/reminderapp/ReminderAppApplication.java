@@ -38,7 +38,7 @@ public class ReminderAppApplication {
           .password("keti")
           .role(ADMIN)
           .build();
-      System.out.println("Admin token: " + service.registerOrUpdateAdmin(admin).getAccessToken());
+      service.registerOrUpdateAdmin(admin);
       service.registerOrUpdateAdmin(other);
 
     };

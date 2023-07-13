@@ -10,7 +10,6 @@ import java.sql.SQLException;
 public class TokenMapper implements RowMapper<Token> {
 
   public Token mapRow(ResultSet resultSet, int i) throws SQLException {
-    System.out.println(resultSet);
     return new Token(resultSet.getLong("token_id"),
         resultSet.getString("token_value"),
         resultSet.getBoolean("revoked"),
