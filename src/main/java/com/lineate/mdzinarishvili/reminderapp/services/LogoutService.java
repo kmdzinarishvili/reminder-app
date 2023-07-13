@@ -26,7 +26,7 @@ public class LogoutService implements LogoutHandler {
     final String jwt;
     if (authHeader == null || !authHeader.startsWith("Bearer ")) {
       log.warn(
-          "Invalid authHeader passed to logout" + authHeader);
+          "Invalid authHeader passed to logout: {}", authHeader);
       return;
     }
     jwt = authHeader.substring(7);
@@ -39,7 +39,7 @@ public class LogoutService implements LogoutHandler {
       SecurityContextHolder.clearContext();
     } else {
       log.warn(
-          "Invalid authHeader with stored token null passed to logout" + authHeader);
+          "Invalid authHeader with stored token null passed to logout: {}", authHeader);
     }
   }
 }
