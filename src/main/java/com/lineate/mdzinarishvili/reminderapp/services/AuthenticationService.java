@@ -5,6 +5,7 @@ import com.lineate.mdzinarishvili.reminderapp.dto.AuthenticationRequest;
 import com.lineate.mdzinarishvili.reminderapp.dto.AuthenticationResponse;
 import com.lineate.mdzinarishvili.reminderapp.dao.UserDaoImpl;
 import com.lineate.mdzinarishvili.reminderapp.dto.RegisterRequest;
+import com.lineate.mdzinarishvili.reminderapp.enums.RoleType;
 import com.lineate.mdzinarishvili.reminderapp.models.User;
 import com.lineate.mdzinarishvili.reminderapp.models.Token;
 import com.lineate.mdzinarishvili.reminderapp.dao.TokenDaoImpl;
@@ -39,7 +40,7 @@ public class AuthenticationService {
         .username(request.getUsername())
         .email(request.getEmail())
         .password(passwordEncoder.encode(request.getPassword()))
-        .role(request.getRole())
+        .role(RoleType.USER)
         .build();
     var savedUser = userDao.save(user);
     var jwtToken = jwtService.generateToken(user);

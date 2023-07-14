@@ -2,6 +2,8 @@ package com.lineate.mdzinarishvili.reminderapp.dao;
 
 import com.lineate.mdzinarishvili.reminderapp.enums.RoleType;
 import com.lineate.mdzinarishvili.reminderapp.enums.UsersSortType;
+import com.lineate.mdzinarishvili.reminderapp.exceptions.DatabaseException;
+import com.lineate.mdzinarishvili.reminderapp.exceptions.InvalidInputException;
 import com.lineate.mdzinarishvili.reminderapp.models.User;
 import com.lineate.mdzinarishvili.reminderapp.models.UserMapper;
 import java.util.HashMap;
@@ -70,10 +72,15 @@ public class UserDaoImpl implements UserDao {
   }
 
   public User save(User user) {
-    log.info("Saving user with username: {}", user.getUsername());
-    int result = jdbcTemplate.update(SQL_INSERT_USER, user.getUsername(), user.getEmail(),
-        user.getPassword(), user.getTimezoneOffsetHours(), findRoleId(user.getRole()));
-    return this.findByEmail(user.getEmail()).get();
+
+    try {
+      log.info("Saving user with username: {}", user.getUsername());
+      jdbcTemplate.update(SQL_INSERT_USER, user.getUsername(), user.getEmail(),
+          user.getPassword(), user.getTimezoneOffsetHours(), findRoleId(user.getRole()));
+      return this.findByEmail(user.getEmail()).get();
+    } catch (Exception exception) {
+      throw new InvalidInputException("email or username already in use");
+    }
   }
 
   public User insertOrUpdate(User user) {
