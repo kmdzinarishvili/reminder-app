@@ -97,7 +97,7 @@ public class ReminderDAOImpl implements ReminderDAO {
   public List<Reminder> selectReminders(Long user_id) {
     log.info("select all reminders in dao for user with id: {}", user_id);
     final String SQL_GET_ALL =
-        "select r.*, rt.recurrence_name as recurrence from reminders r " +
+        "select r.*, rt.recurrence_name from reminders r " +
             " join recurrence_types rt " +
             " on r.recurrence_id = rt.recurrence_id " +
             " where user_id = ?";
@@ -108,12 +108,26 @@ public class ReminderDAOImpl implements ReminderDAO {
   public List<Reminder> selectOverdueReminders(Long user_id) {
     log.info("select all overdue reminders in dao for user with id: {}", user_id);
     final String SQL_GET_OVERDUE =
-        "select r.*, rt.recurrence_name as recurrence, category_name from reminders r " +
+        "select r.*, rt.recurrence_name, c.category_name from reminders r " +
             " join recurrence_types rt " +
             " on r.recurrence_id = rt.recurrence_id " +
             " join categories c using (category_id)" +
-            " where user_id = ? and " +
-            " ((rt.recurrence_name =\'NEVER' and which_reminder_completed is null) or which_reminder_completed < now() )";
+            " join labels_reminders lr using (reminder_id)" +
+            " join labels l using (label_id) " +
+            " where user_id = ? and reminder_datetime<now() and (which_reminder_completed is null or  " +
+            " (rt.recurrence_name ='DAILY' and " +
+            " ((reminder_datetime::time>now()::time and which_reminder_completed <current_date - INTEGER '1') or" +
+            " (reminder_datetime::time<=now()::time and which_reminder_completed <current_date::timestamp))) or " +
+            " (rt.recurrence_name = 'WEEKLY' and " +
+            " (((extract('dow' from current_date)!= extract('dow' from reminder_datetime) or (extract('dow' from current_date)= extract('dow' from reminder_datetime) and reminder_datetime::time<=now()::time))" +
+            " and which_reminder_completed <current_date - ((extract('dow' from reminder_datetime) + cast(extract(dow FROM current_date) AS int)) % 7)::integer or" +
+            " ((extract('dow' from current_date)=extract('dow' from reminder_datetime)) and reminder_datetime::time>now()::time and which_reminder_completed<current_date)))) or " +
+            " (rt.recurrence_name = 'MONTHLY' and " +
+            " (((extract('day' from reminder_datetime) < extract('day' from current_date)) or (extract('day' from reminder_datetime) = extract('day' from current_date) and reminder_datetime::time<=now()::time" +
+            " and which_reminder_completed<date_trunc('month', current_date)+ interval '1' day * (extract('day' from  reminder_datetime)::integer-1)+reminder_datetime::time))or " +
+            " ((extract('day' from reminder_datetime) < extract('day' from current_date))" +
+            " and which_reminder_completed<date_trunc('month', current_date)+ interval '1' month+ interval '1' day *" +
+            " (extract('day' from  reminder_datetime)::integer-1)+reminder_datetime::time))))";
     return jdbcTemplate.query(SQL_GET_OVERDUE, new ReminderMapper(), user_id);
   }
 
@@ -125,7 +139,7 @@ public class ReminderDAOImpl implements ReminderDAO {
     }
     log.info("select reminder by id: {}", id);
     final String SQL_FIND_REMINDER =
-        "select r.*, rt.recurrence_name as recurrence from reminders r " +
+        "select r.*, rt.recurrence_name from reminders r " +
             "join recurrence_types rt " +
             "on r.recurrence_id = rt.recurrence_id " +
             " where reminder_id = ?";
