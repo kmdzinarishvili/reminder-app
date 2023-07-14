@@ -24,12 +24,13 @@ public class LogoutService implements LogoutHandler {
   ) {
     final String authHeader = request.getHeader("Authorization");
     final String jwt;
-    if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+    String jwtHeaderBeginning = "Bearer ";
+    if (authHeader == null || !authHeader.startsWith(jwtHeaderBeginning)) {
       log.warn(
           "Invalid authHeader passed to logout: {}", authHeader);
       return;
     }
-    jwt = authHeader.substring(7);
+    jwt = authHeader.substring(jwtHeaderBeginning.length());
     var storedToken = tokenDaoImpl.findByToken(jwt)
         .orElse(null);
     if (storedToken != null) {

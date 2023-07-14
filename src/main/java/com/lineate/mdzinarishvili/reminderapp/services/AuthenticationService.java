@@ -128,12 +128,13 @@ public class AuthenticationService {
     final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
     final String refreshToken;
     final String username;
-    if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+    String jwtHeaderBeginning = "Bearer ";
+    if (authHeader == null || !authHeader.startsWith(jwtHeaderBeginning)) {
       log.warn(
           "Invalid authHeader passed to refresh token: {}", authHeader);
       return;
     }
-    refreshToken = authHeader.substring(7);
+    refreshToken = authHeader.substring(jwtHeaderBeginning.length());
     username = jwtService.extractUsername(refreshToken);
     if (username != null) {
       var user = this.userDao.selectUserByUsername(username).orElseThrow();
