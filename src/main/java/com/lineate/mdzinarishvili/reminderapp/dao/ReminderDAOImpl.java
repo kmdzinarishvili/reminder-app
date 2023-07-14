@@ -9,6 +9,7 @@ import com.lineate.mdzinarishvili.reminderapp.models.LabelMapper;
 import com.lineate.mdzinarishvili.reminderapp.models.Reminder;
 import com.lineate.mdzinarishvili.reminderapp.models.ReminderMapper;
 import com.lineate.mdzinarishvili.reminderapp.models.User;
+import java.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -84,16 +85,24 @@ public class ReminderDAOImpl implements ReminderDAO {
 
 
   @Override
-  public List<Reminder> selectReminders() {
-    User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+  public List<Reminder> selectReminders(Long user_id) {
     final String SQL_GET_ALL =
-        "select r.reminder_id, title, rt.recurrence_name as recurrence, r.reminder_datetime, r.attachment from reminders r " +
-            "join recurrence_types rt " +
-            "on r.recurrence_id = rt.recurrence_id " +
-            "join reminders_users ru " +
-            "on ru.reminder_id = r.reminder_id" +
+        "select r.*, rt.recurrence_name as recurrence from reminders r " +
+            " join recurrence_types rt " +
+            " on r.recurrence_id = rt.recurrence_id " +
             " where user_id = ?";
-    return jdbcTemplate.query(SQL_GET_ALL, new ReminderMapper(), user.getId());
+    return jdbcTemplate.query(SQL_GET_ALL, new ReminderMapper(), user_id);
+  }
+
+  @Override
+  public List<Reminder> selectOverdueReminders(Long user_id) {
+    final String SQL_GET_OVERDUE =
+        "select r.*, rt.recurrence_name as recurrence from reminders r " +
+            " join recurrence_types rt " +
+            " on r.recurrence_id = rt.recurrence_id " +
+            " where user_id = ? and " +
+            " ((rt.recurrence_name =\'NEVER' and which_reminder_completed is null) or which_reminder_completed < now() )";
+    return jdbcTemplate.query(SQL_GET_OVERDUE, new ReminderMapper(), user_id);
   }
 
   @Override
@@ -102,7 +111,7 @@ public class ReminderDAOImpl implements ReminderDAO {
       throw new DatabaseException("ID not found");
     }
     final String SQL_FIND_REMINDER =
-        "select r.reminder_id, title, rt.recurrence_name as recurrence, r.reminder_datetime, r.attachment from reminders r " +
+        "select r.*, rt.recurrence_name as recurrence from reminders r " +
             "join recurrence_types rt " +
             "on r.recurrence_id = rt.recurrence_id " +
             " where reminder_id = ?";
@@ -127,10 +136,17 @@ public class ReminderDAOImpl implements ReminderDAO {
     Integer enumId = getEnumId(reminder.getRecurrence());
     try {
       final String SQL_UPDATE_REMINDER =
-          "update reminders set title = ?, recurrence_id = ?, reminder_datetime  = ?, attachment = ? where reminder_id = ?";
+          "update reminders" +
+              " set title = ?," +
+              " recurrence_id = ?," +
+              " reminder_datetime  = ?," +
+              " priority = ?," +
+              " category_id = ?," +
+              " attachment = ?" +
+              " where reminder_id = ?";
       jdbcTemplate.update(SQL_UPDATE_REMINDER, reminder.getTitle(), enumId,
-          reminder.getDate(), reminder.getAttachment(),
-          reminder.getId());
+          reminder.getDate(), reminder.getPriority(), getCategoryId(reminder.getCategory()),
+          reminder.getAttachment(), reminder.getId());
       return reminder;
     } catch (Throwable throwable) {
       throw new DatabaseException("oops something went wrong, could not insert");
@@ -200,4 +216,10 @@ public class ReminderDAOImpl implements ReminderDAO {
     return jdbcTemplate.update(SQL_SET_ACCEPTANCE, id) == 1;
   }
 
+  public boolean setCompletedDate(LocalDateTime dateTime, Long id) {
+    final String SQL_SET_COMPLETE =
+        "update reminders set completed_date= ?" +
+            " where reminder_id = ?";
+    return jdbcTemplate.update(SQL_SET_COMPLETE, dateTime, id) == 1;
+  }
 }

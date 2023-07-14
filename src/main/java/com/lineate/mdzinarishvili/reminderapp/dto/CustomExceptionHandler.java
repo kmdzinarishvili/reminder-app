@@ -1,5 +1,6 @@
 package com.lineate.mdzinarishvili.reminderapp.dto;
 
+import com.lineate.mdzinarishvili.reminderapp.exceptions.DatabaseException;
 import com.lineate.mdzinarishvili.reminderapp.exceptions.InvalidInputException;
 import com.lineate.mdzinarishvili.reminderapp.exceptions.NotFoundException;
 import org.springframework.http.HttpHeaders;
@@ -18,6 +19,14 @@ public class CustomExceptionHandler
       = {InvalidInputException.class, NotFoundException.class})
   protected ResponseEntity<Object> handleConflict(
       InvalidInputException ex, WebRequest request) {
+    return handleExceptionInternal(ex, ex.getMessage(),
+        new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+  }
+
+  @ExceptionHandler(value
+      = {DatabaseException.class})
+  protected ResponseEntity<Object> handleDatabaseIssue(
+      DatabaseException ex, WebRequest request) {
     return handleExceptionInternal(ex, ex.getMessage(),
         new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
   }

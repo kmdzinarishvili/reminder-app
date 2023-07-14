@@ -30,7 +30,16 @@ public class ReminderService {
   }
 
   public List<Reminder> getReminders() {
-    return reminderDao.selectReminders();
+    User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    Long user_id = user.getId();
+    return reminderDao.selectReminders(user_id);
+
+  }
+
+  public List<Reminder> getOverdueReminders() {
+    User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    Long user_id = user.getId();
+    return reminderDao.selectOverdueReminders(user_id);
 
   }
 
@@ -43,6 +52,7 @@ public class ReminderService {
     List<Reminder> oldReminders = new ArrayList<>();
     reminders.forEach((reminder) -> {
       LocalDateTime reminderDate = reminder.getDate();
+      LocalDateTime date;
       switch (reminder.getRecurrence()) {
         case NEVER:
           if (reminderDate.isAfter(daysBeforeDate)
@@ -52,16 +62,14 @@ public class ReminderService {
           }
           break;
         case DAILY:
-          for (int i = 0; i < daysBefore; i++) {
-            LocalDateTime date = daysBeforeDate.plusDays(i);
-            date = date.withHour(reminderDate.getHour()).withMinute(reminderDate.getMinute());
-            reminder.setDate(date);
-          }
+          date = daysBeforeDate.plusDays(daysBefore - 1);
+          date = date.withHour(reminderDate.getHour()).withMinute(reminderDate.getMinute());
+          reminder.setDate(date);
           oldReminders.add(reminder);
           break;
         case WEEKLY:
           for (int i = 0; i < daysBefore; i++) {
-            LocalDateTime date = daysBeforeDate.plusDays(i);
+            date = daysBeforeDate.plusDays(i);
             if (reminder.getDate().getDayOfWeek() ==
                 date.getDayOfWeek()) {
               date = date.withHour(reminderDate.getHour()).withMinute(reminderDate.getMinute());
@@ -72,7 +80,7 @@ public class ReminderService {
           break;
         case MONTHLY:
           for (int i = 0; i < daysBefore; i++) {
-            LocalDateTime date = daysBeforeDate.plusDays(i);
+            date = daysBeforeDate.plusDays(i);
             if (reminder.getDate().getDayOfMonth() ==
                 date.getDayOfMonth()) {
               date = date.withHour(reminderDate.getHour()).withMinute(reminderDate.getMinute());
@@ -118,6 +126,60 @@ public class ReminderService {
     return dateReminders;
   }
 
+
+  private List<Reminder> getRemindersPeriod(LocalDateTime startDate, int howManyDays) {
+    LocalDateTime start = startDate;
+    LocalDateTime end = LocalDateTime.now().plusDays(howManyDays);
+    List<Reminder> reminders = getReminders();
+    List<Reminder> newReminders = new ArrayList<>();
+    reminders.forEach((reminder) -> {
+      LocalDateTime reminderDate = reminder.getDate();
+      switch (reminder.getRecurrence()) {
+        case NEVER:
+          if (reminderDate.isAfter(start)
+              &&
+              reminderDate.isBefore(end)) {
+            newReminders.add(reminder);
+          }
+          break;
+        case DAILY:
+          for (int i = 1; i <= howManyDays; i++) {
+            LocalDateTime date = start.plusDays(i);
+            date = date.withHour(reminderDate.getHour()).withMinute(reminderDate.getMinute());
+            reminder.setDate(date);
+            newReminders.add(reminder);
+            break;
+          }
+          break;
+        case WEEKLY:
+          for (int i = 1; i <= howManyDays; i++) {
+            LocalDateTime date = start.plusDays(i);
+            if (reminder.getDate().getDayOfWeek() ==
+                date.getDayOfWeek()) {
+              date = date.withHour(reminderDate.getHour()).withMinute(reminderDate.getMinute());
+              reminder.setDate(date);
+              newReminders.add(reminder);
+              break;
+            }
+          }
+          break;
+        case MONTHLY:
+          for (int i = 1; i <= howManyDays; i++) {
+            LocalDateTime date = start.plusDays(i);
+            if (reminder.getDate().getDayOfMonth() ==
+                date.getDayOfMonth()) {
+              date = date.withHour(reminderDate.getHour()).withMinute(reminderDate.getMinute());
+              reminder.setDate(date);
+              newReminders.add(reminder);
+              break;
+            }
+          }
+          break;
+      }
+    });
+    return newReminders;
+  }
+
   public List<Reminder> getReminders(GetRemindersRequest getRemindersRequest) {
     TimePeriod timePeriod = getRemindersRequest.getTimePeriod();
     switch (timePeriod) {
@@ -127,52 +189,9 @@ public class ReminderService {
         return getRemindersDay(LocalDateTime.now().plusDays(1));
       case WEEK:
         LocalDateTime today = LocalDateTime.now();
-        LocalDateTime endOfWeek = LocalDateTime.now().plusDays(7);
-        List<Reminder> reminders = getReminders();
-        List<Reminder> newReminders = new ArrayList<>();
-        reminders.forEach((reminder) -> {
-          LocalDateTime reminderDate = reminder.getDate();
-          switch (reminder.getRecurrence()) {
-            case NEVER:
-              if (reminderDate.isAfter(today)
-                  &&
-                  reminderDate.isBefore(endOfWeek)) {
-                newReminders.add(reminder);
-              }
-              break;
-            case DAILY:
-              for (int i = 1; i <= 7; i++) {
-                LocalDateTime date = today.plusDays(i);
-                date = date.withHour(reminderDate.getHour()).withMinute(reminderDate.getMinute());
-                reminder.setDate(date);
-              }
-              newReminders.add(reminder);
-              break;
-            case WEEKLY:
-              for (int i = 1; i <= 7; i++) {
-                LocalDateTime date = today.plusDays(i);
-                if (reminder.getDate().getDayOfWeek() ==
-                    date.getDayOfWeek()) {
-                  date = date.withHour(reminderDate.getHour()).withMinute(reminderDate.getMinute());
-                  reminder.setDate(date);
-                  newReminders.add(reminder);
-                }
-              }
-              break;
-            case MONTHLY:
-              for (int i = 1; i <= 7; i++) {
-                LocalDateTime date = today.plusDays(i);
-                if (reminder.getDate().getDayOfMonth() ==
-                    date.getDayOfMonth()) {
-                  date = date.withHour(reminderDate.getHour()).withMinute(reminderDate.getMinute());
-                  reminder.setDate(date);
-                  newReminders.add(reminder);
-                }
-              }
-              break;
-          }
-        });
-        return newReminders;
+        int lengthOfWeek = 7;
+        return getRemindersPeriod(today, lengthOfWeek);
+
     }
     throw new InvalidInputException("Invalid Time Period indicated");
   }

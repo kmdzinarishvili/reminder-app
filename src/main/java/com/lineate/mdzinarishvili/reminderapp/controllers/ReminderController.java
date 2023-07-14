@@ -63,11 +63,14 @@ public class ReminderController {
   }
 
 
-//  @PostMapping("/{id}/update")
-//  public ReminderResponse updateReminder(@PathVariable("id") Long id,
-//                                         @RequestBody ReminderRequest reminderRequest) {
-//    return reminderService.updateReminder(id, reminderRequest);
-//  }
+  @PostMapping("/{id}/update")
+  public ReminderResponse updateReminder(@PathVariable("id") Long id,
+                                         @RequestBody ReminderRequest reminderRequest) {
+    return reminderService.updateReminder(id, reminderRequest);
+  }
 
-
+  @GetMapping("/overdue")
+  public List<Reminder> updateReminder() {
+    return reminderService.getOverdueReminders();
+  }
 }
