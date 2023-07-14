@@ -2,6 +2,7 @@ package com.lineate.mdzinarishvili.reminderapp.controllers;
 
 
 import com.lineate.mdzinarishvili.reminderapp.dto.GetRemindersRequest;
+import com.lineate.mdzinarishvili.reminderapp.dto.ReminderCompletedRequest;
 import com.lineate.mdzinarishvili.reminderapp.dto.ReminderRequest;
 import com.lineate.mdzinarishvili.reminderapp.dto.ReminderResponse;
 import com.lineate.mdzinarishvili.reminderapp.models.Reminder;
@@ -62,7 +63,6 @@ public class ReminderController {
     return reminderService.acceptReminder(id);
   }
 
-
   @PostMapping("/{id}/update")
   public ReminderResponse updateReminder(@PathVariable("id") Long id,
                                          @RequestBody ReminderRequest reminderRequest) {
@@ -73,4 +73,10 @@ public class ReminderController {
   public List<Reminder> updateReminder() {
     return reminderService.getOverdueReminders();
   }
+
+  @PostMapping("/completed")
+  public boolean completeReminder(@RequestBody ReminderCompletedRequest reminderCompletedRequest) {
+    return reminderService.markReminderCompleted(reminderCompletedRequest);
+  }
 }
+

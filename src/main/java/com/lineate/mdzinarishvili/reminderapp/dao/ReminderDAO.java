@@ -3,6 +3,7 @@ package com.lineate.mdzinarishvili.reminderapp.dao;
 import com.lineate.mdzinarishvili.reminderapp.models.Label;
 import com.lineate.mdzinarishvili.reminderapp.models.Reminder;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,6 +26,7 @@ public interface ReminderDAO {
 
   boolean setAcceptedTrue(Long id);
 
+  boolean setCompletedDate(LocalDateTime dateTime, Long id);
 
   List<Reminder> selectOverdueReminders(Long user_id);
 

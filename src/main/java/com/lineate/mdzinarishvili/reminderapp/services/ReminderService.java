@@ -3,9 +3,11 @@ package com.lineate.mdzinarishvili.reminderapp.services;
 import com.lineate.mdzinarishvili.reminderapp.dao.ReminderDAO;
 import com.lineate.mdzinarishvili.reminderapp.dao.UserDao;
 import com.lineate.mdzinarishvili.reminderapp.dto.GetRemindersRequest;
+import com.lineate.mdzinarishvili.reminderapp.dto.ReminderCompletedRequest;
 import com.lineate.mdzinarishvili.reminderapp.dto.ReminderRequest;
 import com.lineate.mdzinarishvili.reminderapp.dto.ReminderResponse;
 import com.lineate.mdzinarishvili.reminderapp.enums.TimePeriod;
+import com.lineate.mdzinarishvili.reminderapp.exceptions.DatabaseException;
 import com.lineate.mdzinarishvili.reminderapp.exceptions.InvalidInputException;
 import com.lineate.mdzinarishvili.reminderapp.exceptions.NotFoundException;
 import com.lineate.mdzinarishvili.reminderapp.models.Label;
@@ -38,6 +40,20 @@ public class ReminderService {
         user.getUsername());
     return reminderDao.selectReminders(user_id);
 
+  }
+
+  public boolean markReminderCompleted(ReminderCompletedRequest reminderCompletedRequest) {
+    User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    log.info(
+        "reminder service mark reminder completed function called by user with username: {} with data: {}",
+        user.getUsername(), reminderCompletedRequest);
+    boolean res = reminderDao.setCompletedDate(reminderCompletedRequest.getDate(),
+        reminderCompletedRequest.getId());
+    log.info(
+        "reminder service setting date of last activity to now for completion user with username: {}",
+        user.getUsername());
+    userDao.setDateOfLastActivityNow(user.getId());
+    return res;
   }
 
   public List<Reminder> getOverdueReminders() {
@@ -264,7 +280,12 @@ public class ReminderService {
       labels.add(reminderDao.getLabelByName(label));
     });
     reminder.setLabels(labels);
-    return new ReminderResponse(reminderDao.insertReminder(reminder));
+    ReminderResponse reminderResponse = new ReminderResponse(reminderDao.insertReminder(reminder));
+    log.info(
+        "reminder service setting date of last activity to now for completion user with username: {}",
+        principal.getUsername());
+    userDao.setDateOfLastActivityNow(principal.getId());
+    return reminderResponse;
   }
 
   public ReminderResponse updateReminder(Long id, ReminderRequest reminderRequest) {
@@ -325,8 +346,16 @@ public class ReminderService {
 
 
   public Reminder getReminder(Long id) {
+    User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    log.info(
+        "reminder service get reminder by id ({}) by user: {}",
+        id, user.getUsername());
     return reminderDao.selectReminderById(id)
-        .orElseThrow(
-            () -> new NotFoundException(String.format("Reminder with id %s not found", id)));
+        .orElseThrow(() -> {
+          log.error(
+              "reminder service get reminder FAILED by user: {} for reminder with id {} because reminder id not found",
+              user.getUsername(), id);
+          return new NotFoundException(String.format("Reminder with id %s not found", id));
+        });
   }
 }
