@@ -13,11 +13,11 @@ public class ReminderMapper implements RowMapper<Reminder> {
     return new Reminder(resultSet.getLong("reminder_id"),
         resultSet.getString("title"),
         resultSet.getTimestamp("reminder_datetime").toLocalDateTime(),
-        RecurrenceType.valueOf(resultSet.getString("recurrence")),
+        RecurrenceType.valueOf(resultSet.getString("recurrence_name")),
         resultSet.getBytes("attachment"),
         resultSet.getInt("priority"),
-        CategoryType.valueOf(resultSet.getString("category")),
-        resultSet.getBoolean("acceptanceStatus")
+        CategoryType.valueOf(resultSet.getString("category_name")),
+        resultSet.getBoolean("acceptance_status")
     );
   }
 }

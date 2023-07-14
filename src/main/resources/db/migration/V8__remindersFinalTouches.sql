@@ -21,4 +21,4 @@ alter table reminders add column acceptance_status bool;
 alter table reminders alter column reminder_datetime
 set data type timestamp without time zone;
 
-alter table reminders add column which_reminder_completed date;
+alter table reminders add column which_reminder_completed timestamp;

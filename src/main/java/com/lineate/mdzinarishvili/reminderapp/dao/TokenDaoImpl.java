@@ -19,9 +19,10 @@ public class TokenDaoImpl implements TokenDao {
   private final String SQL_FIND_TOKEN = "select * " +
       " from tokens t " +
       " join users u using (user_id) where token_value = ? ";
-  private final String SQL_ALL_VALID_TOKENS_BY_USER = "select t from tokens t inner join users " +
-      " on t.user.id = u.id" +
-      " where u.id = ? and (t.expired = false or t.revoked = false)";
+  private final String SQL_ALL_VALID_TOKENS_BY_USER =
+      "select * from tokens t inner join users u " +
+          " using(user_id)" +
+          " where u.user_id = ? and (t.expired = false or t.revoked = false)";
   private final String SQL_INSERT_TOKEN =
       "insert into tokens (token_value, revoked, expired, user_id) values (?,?,?,?)";
 
