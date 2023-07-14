@@ -5,6 +5,8 @@ import com.lineate.mdzinarishvili.reminderapp.dto.AuthenticationRequest;
 import com.lineate.mdzinarishvili.reminderapp.dto.AuthenticationResponse;
 import com.lineate.mdzinarishvili.reminderapp.dao.UserDaoImpl;
 import com.lineate.mdzinarishvili.reminderapp.dto.RegisterRequest;
+import com.lineate.mdzinarishvili.reminderapp.enums.RoleType;
+import com.lineate.mdzinarishvili.reminderapp.exceptions.InvalidInputException;
 import com.lineate.mdzinarishvili.reminderapp.models.User;
 import com.lineate.mdzinarishvili.reminderapp.models.Token;
 import com.lineate.mdzinarishvili.reminderapp.dao.TokenDaoImpl;
@@ -35,11 +37,21 @@ public class AuthenticationService {
   public AuthenticationResponse register(RegisterRequest request) {
     log.info("Authentication service registration function called with username: {} and email: {}",
         request.getUsername(), request.getEmail());
+    if (request.getUsername() == null) {
+      log.error("Authentication service registration function called with username null");
+      throw new InvalidInputException("username cannot be empty");
+    } else if (request.getEmail() == null) {
+      log.error("Authentication service registration function called with email null");
+      throw new InvalidInputException("email cannot be empty");
+    } else if (request.getPassword() == null) {
+      log.error("Authentication service registration function called with password null");
+      throw new InvalidInputException("password cannot be empty");
+    }
     var user = User.builder()
         .username(request.getUsername())
         .email(request.getEmail())
         .password(passwordEncoder.encode(request.getPassword()))
-        .role(request.getRole())
+        .role(RoleType.USER)
         .build();
     var savedUser = userDao.save(user);
     var jwtToken = jwtService.generateToken(user);
@@ -60,7 +72,7 @@ public class AuthenticationService {
         .password(passwordEncoder.encode(request.getPassword()))
         .role(request.getRole())
         .build();
-    var savedUser = userDao.insertOrUpdate(user);
+    User savedUser = userDao.updateOrInsertUser(user);
     var jwtToken = jwtService.generateToken(user);
     var refreshToken = jwtService.generateRefreshToken(user);
     saveUserToken(savedUser, jwtToken);
@@ -127,12 +139,13 @@ public class AuthenticationService {
     final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
     final String refreshToken;
     final String username;
-    if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+    String jwtHeaderBeginning = "Bearer ";
+    if (authHeader == null || !authHeader.startsWith(jwtHeaderBeginning)) {
       log.warn(
           "Invalid authHeader passed to refresh token: {}", authHeader);
       return;
     }
-    refreshToken = authHeader.substring(7);
+    refreshToken = authHeader.substring(jwtHeaderBeginning.length());
     username = jwtService.extractUsername(refreshToken);
     if (username != null) {
       var user = this.userDao.selectUserByUsername(username).orElseThrow();

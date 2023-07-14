@@ -1,6 +1,7 @@
 package com.lineate.mdzinarishvili.reminderapp.config;
 
 import com.lineate.mdzinarishvili.reminderapp.dao.UserDaoImpl;
+import com.lineate.mdzinarishvili.reminderapp.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,7 +22,7 @@ public class ApplicationConfig {
   @Bean
   public UserDetailsService userDetailsService() {
     return username -> repository.selectUserByUsername(username)
-        .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        .orElseThrow(() -> new NotFoundException("Username Not found"));
   }
 
   @Bean

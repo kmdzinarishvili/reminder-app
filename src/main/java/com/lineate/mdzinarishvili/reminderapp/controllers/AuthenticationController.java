@@ -4,10 +4,12 @@ import com.lineate.mdzinarishvili.reminderapp.dto.AuthenticationRequest;
 import com.lineate.mdzinarishvili.reminderapp.dto.AuthenticationResponse;
 import com.lineate.mdzinarishvili.reminderapp.services.AuthenticationService;
 import com.lineate.mdzinarishvili.reminderapp.dto.RegisterRequest;
+import com.lineate.mdzinarishvili.reminderapp.services.LogoutService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +22,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class AuthenticationController {
   private final AuthenticationService service;
+  private final LogoutService logoutService;
 
   @PostMapping("/register")
   public ResponseEntity<AuthenticationResponse> register(
@@ -43,5 +46,13 @@ public class AuthenticationController {
     service.refreshToken(request, response);
   }
 
+  @PostMapping("/logout")
+  public void logout(
+      HttpServletRequest request,
+      HttpServletResponse response,
+      Authentication authentication
+  ) {
+    logoutService.logout(request, response, authentication);
+  }
 
 }
