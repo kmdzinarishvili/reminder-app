@@ -6,6 +6,7 @@ import com.lineate.mdzinarishvili.reminderapp.dto.AuthenticationResponse;
 import com.lineate.mdzinarishvili.reminderapp.dao.UserDaoImpl;
 import com.lineate.mdzinarishvili.reminderapp.dto.RegisterRequest;
 import com.lineate.mdzinarishvili.reminderapp.enums.RoleType;
+import com.lineate.mdzinarishvili.reminderapp.exceptions.InvalidInputException;
 import com.lineate.mdzinarishvili.reminderapp.models.User;
 import com.lineate.mdzinarishvili.reminderapp.models.Token;
 import com.lineate.mdzinarishvili.reminderapp.dao.TokenDaoImpl;
@@ -36,6 +37,16 @@ public class AuthenticationService {
   public AuthenticationResponse register(RegisterRequest request) {
     log.info("Authentication service registration function called with username: {} and email: {}",
         request.getUsername(), request.getEmail());
+    if (request.getUsername() == null) {
+      log.error("Authentication service registration function called with username null");
+      throw new InvalidInputException("username cannot be empty");
+    } else if (request.getEmail() == null) {
+      log.error("Authentication service registration function called with email null");
+      throw new InvalidInputException("email cannot be empty");
+    } else if (request.getPassword() == null) {
+      log.error("Authentication service registration function called with password null");
+      throw new InvalidInputException("password cannot be empty");
+    }
     var user = User.builder()
         .username(request.getUsername())
         .email(request.getEmail())

@@ -4,6 +4,8 @@ import com.lineate.mdzinarishvili.reminderapp.models.Token;
 import com.lineate.mdzinarishvili.reminderapp.models.TokenMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -34,19 +36,19 @@ public class TokenDaoImpl implements TokenDao {
   }
 
   public Optional<Token> findByToken(String token) {
-    log.info("Getting token by token: {}", token);
+    log.info("Getting token by value");
     return jdbcTemplate.query(SQL_FIND_TOKEN, new TokenMapper(), token).stream().findFirst();
   }
 
   public Optional<Token> save(Token token) {
-    log.info("saving token with value {}", token.getToken());
+    log.info("saving token");
     jdbcTemplate.update(SQL_INSERT_TOKEN, token.getToken(),
         token.isRevoked(), token.isExpired(), token.getUser().getId());
     return this.findByToken(token.getToken());
   }
 
   public List<Token> saveAll(List<Token> tokens) {
-    log.info("saving all tokens {}", tokens.toString());
+    log.info("saving all tokens");
     List<Token> savedTokens = new ArrayList<>();
     for (Token token : tokens) {
       savedTokens.add(this.save(token).get());
