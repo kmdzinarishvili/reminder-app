@@ -11,24 +11,23 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 @Configuration
 public class DataSourceConfig {
+  @Bean
+  @Primary
+  @ConfigurationProperties("app.datasource.main")
+  public HikariDataSource hikariDataSource() {
+    return DataSourceBuilder
+        .create()
+        .type(HikariDataSource.class)
+        .build();
+  }
 
-    @Bean
-    @Primary
-    @ConfigurationProperties("app.datasource.main")
-    public HikariDataSource hikariDataSource(){
-        return DataSourceBuilder
-                .create()
-                .type(HikariDataSource.class)
-                .build();
-    }
+  @Bean
+  public JdbcTemplate jdbcTemplate(HikariDataSource hikariDataSource) {
+    return new JdbcTemplate(hikariDataSource);
+  }
 
-    @Bean
-    public JdbcTemplate jdbcTemplate(HikariDataSource hikariDataSource){
-        return new JdbcTemplate(hikariDataSource);
-    }
-
-    @Bean
-    public NamedParameterJdbcTemplate namedParameterJdbcTemplate(HikariDataSource hikariDataSource){
-        return new NamedParameterJdbcTemplate(hikariDataSource);
-    }
+  @Bean
+  public NamedParameterJdbcTemplate namedParameterJdbcTemplate(HikariDataSource hikariDataSource) {
+    return new NamedParameterJdbcTemplate(hikariDataSource);
+  }
 }

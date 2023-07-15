@@ -6,14 +6,16 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ReminderDAO {
+  List<Reminder> selectReminders();
 
-    List<Reminder> selectReminders();
-    Optional<Reminder> selectReminderById(Long id);
-    Reminder insertReminder(Reminder person);
-    Reminder updateReminder(Reminder person);
+  Optional<Reminder> selectReminderById(Long id);
 
-    Boolean deleteReminderById(Long id);
-    public boolean isIdValid(Long id);
+  Reminder insertReminder(Reminder person);
 
+  Reminder updateReminder(Reminder person);
+
+  Boolean deleteReminderById(Long id);
+
+  public boolean isIdValid(Long id);
 
 }
