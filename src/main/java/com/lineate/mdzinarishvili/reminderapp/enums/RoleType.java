@@ -16,14 +16,7 @@ import static com.lineate.mdzinarishvili.reminderapp.models.Permission.*;
 @RequiredArgsConstructor
 public enum RoleType {
   USER(Collections.emptySet()),
-  ADMIN(
-      Set.of(
-          ADMIN_READ,
-          ADMIN_UPDATE,
-          ADMIN_DELETE,
-          ADMIN_CREATE
-      )
-  ),
+  ADMIN(Collections.emptySet()),
   ;
   @Getter
   private final Set<Permission> permissions;

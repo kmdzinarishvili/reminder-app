@@ -14,9 +14,7 @@ public class TokenMapper implements RowMapper<Token> {
         resultSet.getString("token_value"),
         resultSet.getBoolean("revoked"),
         resultSet.getBoolean("expired"),
-        new User(resultSet.getLong("user_id"), resultSet.getString("username"),
-            resultSet.getString("email"), resultSet.getString("password"),
-            RoleType.valueOf(resultSet.getString("role")))
+        new User(resultSet.getLong("user_id"))
     );
   }
 

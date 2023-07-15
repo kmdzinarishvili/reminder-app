@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserDao {
-  List<User> selectUsers();
+  List<User> selectUsers(String sortType);
 
   Optional<User> selectUserById(Long id);
 
@@ -17,4 +17,6 @@ public interface UserDao {
   int deleteUserById(Long id);
 
   Optional<User> insertUser(User user);
+
+  Optional<User> findByEmail(String email);
 }
