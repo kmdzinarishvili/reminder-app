@@ -1,6 +1,5 @@
 package com.lineate.mdzinarishvili.reminderapp.controllers;
 
-import com.lineate.mdzinarishvili.reminderapp.dao.UserDaoImpl;
 import com.lineate.mdzinarishvili.reminderapp.dto.DeleteUserRequest;
 import com.lineate.mdzinarishvili.reminderapp.dto.UsersRequest;
 import com.lineate.mdzinarishvili.reminderapp.models.User;
