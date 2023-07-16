@@ -60,6 +60,7 @@ public class AuthenticationService {
     return AuthenticationResponse.builder()
         .accessToken(jwtToken)
         .refreshToken(refreshToken)
+        .role(savedUser.getRole().toString())
         .build();
   }
 
@@ -100,6 +101,7 @@ public class AuthenticationService {
     return AuthenticationResponse.builder()
         .accessToken(jwtToken)
         .refreshToken(refreshToken)
+        .role(user.getRole().toString())
         .build();
   }
 
