@@ -1,13 +1,13 @@
 import { Routes, Route } from 'react-router-dom';
 
-import Register from './components/Register';
-import Login from './components/Login';
-import Home from './components/Home';
-import Layout from './components/Layout';
-import Admin from './components/Admin';
-import Unauthorized from './components/Unauthorized';
-import RequireAuth from './components/RequireAuth';
-import NotFound from './components/NotFound';
+import Register from './pages/Register';
+import Login from './pages/Login';
+import Home from './pages/Home';
+import Layout from './pages/Layout';
+import Admin from './pages/Admin';
+import Unauthorized from './pages/Unauthorized';
+import RequireAuth from './pages/RequireAuth';
+import NotFound from './pages/NotFound';
 
 import './App.css';
 
@@ -24,7 +24,7 @@ function App() {
           <Route path="/" element={<Home />} />
         </Route>
 
-        <Route element={<RequireAuth allowedRoles={"ADMIN"} />}>
+        <Route element={<RequireAuth allowedRole={"ADMIN"} />}>
           <Route path="admin" element={<Admin />} />
         </Route>
 

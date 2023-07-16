@@ -1,23 +1,17 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import useAuth from '../hooks/useAuth';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
-import axios from 'axios';
-const LOGIN_URL = '/auth';
+import { Link, useNavigate } from 'react-router-dom';
 
-const Register = () => {
-    const  {REACT_APP_API_BASE_URL} = process.env
-    useEffect(()=>{
-        console.log(REACT_APP_API_BASE_URL);
-    },[])
-    const { setAuth } = useAuth();
+import axios from 'axios';
+const LOGIN_URL = '/auth/authenticate';
+
+const Login = () => {
+    const { auth, setAuth } = useAuth();
+    const {REACT_APP_API_BASE_URL:BASE_URL}= process.env;
 
     const navigate = useNavigate();
-    const location = useLocation();
-    const from = location.state?.from?.pathname || "/";
-
 
     const [username, setUsername] = useState();
-    const [email, setEmail] = useState();
     const [password, setPassword] = useState();
     const [errMsg, setErrMsg] = useState();
 
@@ -27,24 +21,29 @@ const Register = () => {
         e.preventDefault();
 
         try {
-            const response = await axios.post(LOGIN_URL,
-                JSON.stringify({ username, email, password }),
+            const response = await axios.post(BASE_URL+LOGIN_URL,
+                JSON.stringify({ username, password }),
                 {
                     headers: { 'Content-Type': 'application/json' },
-                    withCredentials: true
                 }
             );
-            console.log(JSON.stringify(response?.data));
-            const accessToken = response?.data?.accessToken;
+            console.log(JSON.stringify(response));
+            const accessToken = response?.data?.access_token;
             const role = response?.data?.role;
+            console.log("auth", {  role, accessToken })
             setAuth({  role, accessToken });
-            navigate(from, { replace: true });
+            console.log("set auth", auth)
+            if(role==="ADMIN"){
+                navigate("/admin");
+            }else{
+                navigate("/")
+            }
         } catch (err) {
             if (!err?.response) {
                 setErrMsg('No Server Response');
             } else if (err.response?.status === 400) {
                 setErrMsg('Missing Username or Password');
-            } else if (err.response?.status === 401) {
+            } else if (err.response?.status === 401|| err.response?.status ===403) {
                 setErrMsg('Unauthorized');
             } else {
                 setErrMsg('Login Failed');
@@ -55,7 +54,7 @@ const Register = () => {
     return (
 
         <section>
-            <h1>Register</h1>
+            <h1>Login</h1>
             <form onSubmit={handleSubmit} className='box'>
                 <label htmlFor="username">Username:</label>
                 <input
@@ -64,14 +63,6 @@ const Register = () => {
                     autoComplete="off"
                     onChange={(e) => setUsername(e.target.value)}
                     value={username}
-                    required
-                />
-                <label htmlFor="email">Email:</label>
-                <input
-                    type="email"
-                    id="email"
-                    onChange={(e) => setEmail(e.target.value)}
-                    value={email}
                     required
                 />
                 <label htmlFor="password">Password:</label>
@@ -86,9 +77,9 @@ const Register = () => {
                 <button>Sign In</button>
             </form>
             <p>
-                Have an Account?<br />
+                Need an Account?<br />
                 <span className="line">
-                    <Link to="/login">Login</Link>
+                    <Link to="/register">Sign Up</Link>
                 </span>
             </p>
         </section>
@@ -96,4 +87,4 @@ const Register = () => {
     )
 }
 
-export default Register
+export default Login

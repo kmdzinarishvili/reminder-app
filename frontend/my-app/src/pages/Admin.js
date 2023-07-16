@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom"
+import LogoutBtn from "../components/LogoutBtn"
 
 const Admin = () => {
     return (
@@ -9,6 +10,7 @@ const Admin = () => {
             <div className="flexGrow">
                 <Link to="/">Home</Link>
             </div>
+            <LogoutBtn/>
         </section>
     )
 }

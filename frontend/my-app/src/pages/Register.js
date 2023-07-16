@@ -1,21 +1,19 @@
 import { useState } from 'react';
 import useAuth from '../hooks/useAuth';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
-
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-const LOGIN_URL = '/auth';
+const REGISTER_URL = '/auth/register';
 
-const Login = () => {
+const Register = () => {
+    const  {REACT_APP_API_BASE_URL: BASE_URL} = process.env
     const { setAuth } = useAuth();
 
     const navigate = useNavigate();
-    const location = useLocation();
-    const from = location.state?.from?.pathname || "/";
 
-
-    const [username, setUsername] = useState();
-    const [password, setPassword] = useState();
-    const [errMsg, setErrMsg] = useState();
+    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [errMsg, setErrMsg] = useState('');
 
 
 
@@ -23,24 +21,23 @@ const Login = () => {
         e.preventDefault();
 
         try {
-            const response = await axios.post(LOGIN_URL,
-                JSON.stringify({ username, password }),
+            const response = await axios.post(BASE_URL+REGISTER_URL,
+                JSON.stringify({ username, email, password }),
                 {
                     headers: { 'Content-Type': 'application/json' },
-                    withCredentials: true
                 }
             );
-            console.log(JSON.stringify(response));
-            const accessToken = response?.data?.accessToken;
-            const roles = response?.data?.roles;
-            setAuth({  roles, accessToken });
-            navigate(from, { replace: true });
+            console.log(JSON.stringify(response?.data));
+            const accessToken = response?.data?.access_token;
+            const role = response?.data?.role;
+            setAuth({  role, accessToken });
+            navigate('/');
         } catch (err) {
             if (!err?.response) {
                 setErrMsg('No Server Response');
             } else if (err.response?.status === 400) {
                 setErrMsg('Missing Username or Password');
-            } else if (err.response?.status === 401|| err.response?.status ===403) {
+            } else if (err.response?.status === 401) {
                 setErrMsg('Unauthorized');
             } else {
                 setErrMsg('Login Failed');
@@ -51,7 +48,7 @@ const Login = () => {
     return (
 
         <section>
-            <h1>Login</h1>
+            <h1>Register</h1>
             <form onSubmit={handleSubmit} className='box'>
                 <label htmlFor="username">Username:</label>
                 <input
@@ -60,6 +57,14 @@ const Login = () => {
                     autoComplete="off"
                     onChange={(e) => setUsername(e.target.value)}
                     value={username}
+                    required
+                />
+                <label htmlFor="email">Email:</label>
+                <input
+                    type="email"
+                    id="email"
+                    onChange={(e) => setEmail(e.target.value)}
+                    value={email}
                     required
                 />
                 <label htmlFor="password">Password:</label>
@@ -71,12 +76,12 @@ const Login = () => {
                     required
                 />
                 <p>{errMsg}</p>
-                <button>Sign In</button>
+                <button>Register</button>
             </form>
             <p>
-                Need an Account?<br />
+                Have an Account?<br />
                 <span className="line">
-                    <Link to="/register">Sign Up</Link>
+                    <Link to="/login">Login</Link>
                 </span>
             </p>
         </section>
@@ -84,4 +89,4 @@ const Login = () => {
     )
 }
 
-export default Login
+export default Register

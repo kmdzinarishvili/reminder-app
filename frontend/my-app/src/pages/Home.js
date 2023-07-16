@@ -8,6 +8,12 @@ const Home = () => {
 
     const logout = async () => {
         //api call for logout 
+        // const response = await axios.post(BASE_URL+REGISTER_URL,
+        //     JSON.stringify({ username, email, password }),
+        //     {
+        //         headers: { 'Content-Type': 'application/json' },
+        //     }
+        // );
         setAuth({});
         navigate('/login');
     }
