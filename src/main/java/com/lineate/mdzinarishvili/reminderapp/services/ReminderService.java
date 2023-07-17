@@ -12,6 +12,7 @@ import com.lineate.mdzinarishvili.reminderapp.exceptions.NotFoundException;
 import com.lineate.mdzinarishvili.reminderapp.models.Label;
 import com.lineate.mdzinarishvili.reminderapp.models.Reminder;
 import com.lineate.mdzinarishvili.reminderapp.models.User;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.TemporalAdjusters;
@@ -212,36 +213,48 @@ public class ReminderService {
     });
     return oldReminders;
   }
+  private boolean checkUpcomingNeverReminder(Reminder reminder, LocalDateTime date ){
+    return reminder.getDate().toLocalDate().equals(date.toLocalDate())&&
+        reminder.getDate().toLocalTime().compareTo(date.toLocalTime())>=0&&
+        reminder.getWhichCompleted()==null;
+  }
 
+  private boolean checkUpcomingReminder(LocalDate reminderCompleted, LocalDateTime date){
+    return reminderCompleted ==null || reminderCompleted.isBefore(date.toLocalDate());
+  }
   private List<Reminder> getRemindersDay(LocalDateTime date) {
     User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     log.info("reminder service get reminders on the day {}  called by user with username: {}",
         date, user.getUsername());
     List<Reminder> reminders = getReminders();
+    reminders = groupReminders(reminders);
     List<Reminder> dateReminders = new ArrayList<>();
     reminders.forEach((reminder) -> {
       LocalTime reminderTime = reminder.getDate().toLocalTime();
       switch (reminder.getRecurrence()) {
         case NEVER:
-          if (reminder.getDate().toLocalDate().equals(date.toLocalDate())) {
+          if (checkUpcomingNeverReminder(reminder, date)) {
             reminder.setDate(date.withHour(reminderTime.getHour()).withMinute(reminderTime.getMinute()));
             dateReminders.add(reminder);
           }
           break;
         case DAILY:
-          reminder.setDate(date.withHour(reminderTime.getHour()).withMinute(reminderTime.getMinute()));
-          dateReminders.add(reminder);
+          if(checkUpcomingReminder(reminder.getWhichCompleted(), date)) {
+            reminder.setDate(
+                date.withHour(reminderTime.getHour()).withMinute(reminderTime.getMinute()));
+            dateReminders.add(reminder);
+          }
           break;
         case WEEKLY:
           if (reminder.getDate().getDayOfWeek() ==
-              date.getDayOfWeek()) {
+              date.getDayOfWeek() && checkUpcomingReminder(reminder.getWhichCompleted(), date)) {
             reminder.setDate(date.withHour(reminderTime.getHour()).withMinute(reminderTime.getMinute()));
             dateReminders.add(reminder);
           }
           break;
         case MONTHLY:
           if (reminder.getDate().getDayOfMonth() ==
-              date.getDayOfMonth()) {
+              date.getDayOfMonth() && checkUpcomingReminder(reminder.getWhichCompleted(), date)) {
             reminder.setDate(date.withHour(reminderTime.getHour()).withMinute(reminderTime.getMinute()));
             dateReminders.add(reminder);
           }
@@ -265,25 +278,30 @@ public class ReminderService {
       LocalDateTime date;
       switch (reminder.getRecurrence()) {
         case NEVER:
-          if (checkInRange(reminderDate, startDate, end)) {
+          if (checkInRange(reminderDate, startDate, end)&& reminder.getWhichCompleted()==null) {
             newReminders.add(reminder);
           }
           break;
         case DAILY:
-          date = calculateDailyDate( startDate.plusDays(1), reminderDate);
-          reminder.setDate(date);
-          newReminders.add(reminder);
+          for (int i =0; i < howManyDays; i++) {
+            if (checkUpcomingReminder(reminder.getWhichCompleted(), startDate.plusDays(i))) {
+              date = calculateDailyDate(startDate.plusDays(i), reminderDate);
+              reminder.setDate(date);
+              newReminders.add(reminder);
+              break;
+            }
+          }
           break;
         case WEEKLY:
           date = getWeeklyReminderDate(1,howManyDays, startDate, reminderDate, true);
-          if (date!= null){
+          if (date!= null && checkUpcomingReminder(reminder.getWhichCompleted(), date)){
             reminder.setDate(date);
             newReminders.add(reminder);
           }
           break;
         case MONTHLY:
           date = getMonthlyReminderDate(1, howManyDays,  startDate, reminderDate, true);
-          if (date!=null){
+          if (date!=null&& checkUpcomingReminder(reminder.getWhichCompleted(), date)){
               reminder.setDate(date);
               newReminders.add(reminder);
           }
@@ -304,7 +322,7 @@ public class ReminderService {
     log.info(
         "reminder service get reminders function called for tomorrow by user with username: {}",
         user.getUsername());
-    return  getRemindersDay(LocalDateTime.now().plusDays(1));
+    return  getRemindersDay(LocalDateTime.now().toLocalDate().atStartOfDay().plusDays(1));
   }
   public List<Reminder> getRemindersWeek() {
     User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
