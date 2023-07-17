@@ -264,7 +264,7 @@ public class ReminderDAOImpl implements ReminderDAO {
   public boolean setCompletedDate(LocalDateTime dateTime, Long id) {
     log.info("set reminder completed date with date: {} for id: {}", dateTime, id);
     final String SQL_SET_COMPLETE =
-        "update reminders set completed_date= ?" +
+        "update reminders set which_reminder_completed= ?" +
             " where reminder_id = ?";
     return jdbcTemplate.update(SQL_SET_COMPLETE, dateTime, id) == 1;
   }

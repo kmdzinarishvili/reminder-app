@@ -58,3 +58,8 @@ input{
   flex-direction: row;
   align-items: center;
 }
+
+.icon{
+  width:25px;
+  height:25px;
+}

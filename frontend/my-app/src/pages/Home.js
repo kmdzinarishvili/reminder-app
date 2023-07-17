@@ -42,9 +42,9 @@ const NavBar = ({setData}) =>{
         setData(response?.data);
     }
     return <div className="row">
-            <button onClick={fetchToday}>Today</button>
-            <button onClick={fetchTomorrow}>Tomorrow</button>
-            <button onClick={fetchThisWeek}>This Week</button>
+        <button onClick={fetchToday}>Today</button>
+        <button onClick={fetchTomorrow}>Tomorrow</button>
+        <button onClick={fetchThisWeek}>This Week</button>
     </div>
 }
 
@@ -54,6 +54,7 @@ const Home = () => {
     const navigate = useNavigate();
     const [data, setData]= useState([]);
     const [overdueReminders, setOverdueReminders] = useState([]);
+    const [fetchToggle, setFetchToggle] = useState(false);
     const addReminder = () =>{
         navigate('/add');
     }
@@ -70,7 +71,7 @@ const Home = () => {
     }
     useEffect(()=>{
        getOverdueReminders();
-    },[])
+    },[fetchToggle])
     return (
         <section className="page">
             <h1>Home</h1>
@@ -79,7 +80,7 @@ const Home = () => {
                 <h4>Overdue: </h4>
                 <div>
                     {overdueReminders.map((reminder)=>
-                        <Reminder key={reminder.id} reminder={reminder}/>
+                        <Reminder key={reminder.id} reminder={reminder} setFetchToggle={setFetchToggle}/>
                     )}
                 </div>
                 <NavBar setData={setData}/>
