@@ -110,7 +110,7 @@ public class ReminderDAOImpl implements ReminderDAO {
   public List<Reminder> selectOverdueReminders(Long user_id) {
     log.info("select all overdue reminders in dao for user with id: {}", user_id);
     final String SQL_GET_OVERDUE =
-        "select r.*, rt.recurrence_name, c.category_name from reminders r " +
+        "select r.*, rt.recurrence_name, c.category_name, l.* from reminders r " +
             " join recurrence_types rt " +
             " on r.recurrence_id = rt.recurrence_id " +
             " join categories c using (category_id)" +

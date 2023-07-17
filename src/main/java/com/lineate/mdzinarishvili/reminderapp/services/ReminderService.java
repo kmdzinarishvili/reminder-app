@@ -43,6 +43,8 @@ public class ReminderService {
             .orElse(null);
         assert reminder != null;
         reminder.addLabels(r.getLabels());
+      }else{
+        filtered.add(r);
       }
     });
     return filtered;
