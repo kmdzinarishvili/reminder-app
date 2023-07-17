@@ -1,28 +1,43 @@
 import { useNavigate } from "react-router-dom";
-import { useContext } from "react";
-import AuthContext from "../context/AuthProvider";
+import { useState } from "react";
+import useAuth from "../hooks/useAuth";
+import LogoutBtn from "../components/LogoutBtn";
 
-const Home = () => {
-    const { setAuth } = useContext(AuthContext);
-    const navigate = useNavigate();
+const NavBar = () =>{
 
-    const logout = async () => {
-        //api call for logout 
-        // const response = await axios.post(BASE_URL+REGISTER_URL,
-        //     JSON.stringify({ username, email, password }),
-        //     {
-        //         headers: { 'Content-Type': 'application/json' },
-        //     }
-        // );
-        setAuth({});
-        navigate('/login');
+    const fetchToday = () =>{
+        alert("pressed today")
     }
 
+    const fetchTomorrow = () =>{
+    }
+
+    const fetchThisWeek =  () => {
+    }
+    return <div className="header">
+            <button onClick={fetchToday}>Today</button>
+            <button onClick={fetchTomorrow}>Tomorrow</button>
+            <button onClick={fetchThisWeek}>This Week</button>
+    </div>
+}
+
+
+const Home = () => {
+    const { setAuth } = useAuth;
+    const navigate = useNavigate();
+    const [data, setData]= useState();
+    const addReminder = () =>{
+        navigate('/add');
+    }
     return (
-        <section>
+        <section className="page">
             <h1>Home</h1>
             <div className="flexGrow">
-                <button onClick={logout}>Sign Out</button>
+            <button onClick={addReminder}>Add Reminder</button>
+
+                <NavBar/>
+
+                <LogoutBtn/>
             </div>
         </section>
     )

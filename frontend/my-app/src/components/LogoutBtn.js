@@ -5,8 +5,7 @@ import axios from 'axios';
 const LOGOUT_URL = '/auth/logout';
 
 const LogoutBtn = () => {
-    const { auth, setAuth } = useAuth();
-    const navigate = useNavigate();
+    const { auth } = useAuth();
     const {REACT_APP_API_BASE_URL:BASE_URL}= process.env;
 
     console.log("auth", auth)
@@ -14,19 +13,20 @@ const LogoutBtn = () => {
     const logout = async () => {
         //api call for logout 
         console.log( "Bearer "+ auth.accessToken);
-        const response = await axios.post(BASE_URL+LOGOUT_URL,
+        console.log(BASE_URL+LOGOUT_URL)
+        const response = await axios.post("/api/v1"+LOGOUT_URL,
+            null,
             {
                 headers: { 
                     'Content-Type': 'application/json', 
                     'Authorization': "Bearer "+ auth.accessToken,
-                
                 }, 
                 withCredentials:true
-                
-            }
-            
+            } 
         );
-        setAuth({});
+        console.log(response)
+        console.log("after resposne")
+        // setAuth({});
         // navigate('/login');
     }
 

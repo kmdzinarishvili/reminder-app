@@ -47,3 +47,17 @@
 input{
   margin-bottom:20px;
 }
+.page{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+.header{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.header-item{
+  /* flex: 1 1 0px; */
+}

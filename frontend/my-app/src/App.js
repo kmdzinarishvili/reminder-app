@@ -8,6 +8,7 @@ import Admin from './pages/Admin';
 import Unauthorized from './pages/Unauthorized';
 import RequireAuth from './pages/RequireAuth';
 import NotFound from './pages/NotFound';
+import AddReminder from './pages/AddReminder';
 
 import './App.css';
 
@@ -22,6 +23,8 @@ function App() {
 
         <Route element={<RequireAuth allowedRole={"USER"} />}>
           <Route path="/" element={<Home />} />
+          <Route path="/add" element={<AddReminder />} />
+
         </Route>
 
         <Route element={<RequireAuth allowedRole={"ADMIN"} />}>
