@@ -26,7 +26,14 @@ import java.util.*;
 public class ReminderDAOImpl implements ReminderDAO {
   JdbcTemplate jdbcTemplate;
   NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-
+  final String SQL_GET_ALL =
+      "select r.*, rt.recurrence_name, lr.label_id, l.label_name, c.category_name  from reminders r " +
+          " join recurrence_types rt " +
+          " on r.recurrence_id = rt.recurrence_id " +
+          " join categories c using (category_id)" +
+          " join labels_reminders lr using (reminder_id)" +
+          " join labels l using(label_id)" +
+          " where user_id = ? ";
 
   @Autowired
   public ReminderDAOImpl(JdbcTemplate jdbcTemplate,
@@ -95,17 +102,22 @@ public class ReminderDAOImpl implements ReminderDAO {
   @Override
   public List<Reminder> selectReminders(Long user_id) {
     log.info("select all reminders in dao for user with id: {}", user_id);
-    final String SQL_GET_ALL =
-        "select r.*, rt.recurrence_name, lr.label_id, l.label_name, c.category_name  from reminders r " +
-            " join recurrence_types rt " +
-            " on r.recurrence_id = rt.recurrence_id " +
-            " join categories c using (category_id)" +
-            " join labels_reminders lr using (reminder_id)" +
-            " join labels l using(label_id)" +
-            " where user_id = ?";
     return jdbcTemplate.query(SQL_GET_ALL, new ReminderMapper(), user_id);
   }
 
+  @Override
+  public List<Reminder> selectRemindersOrderByCreationDate(Long user_id) {
+    log.info("select all reminders by creation date in dao for user with id: {}", user_id);
+    final String SQL_GET_ALL_CREATION = SQL_GET_ALL + " order by creation_date";
+    return jdbcTemplate.query(SQL_GET_ALL_CREATION, new ReminderMapper(), user_id);
+  }
+
+  @Override
+  public List<Reminder> selectRemindersOrderByPriority(Long user_id) {
+    log.info("select all reminders by priority in dao for user with id: {}", user_id);
+    final String SQL_GET_ALL_PRIORITY = SQL_GET_ALL +" order by priority";
+    return jdbcTemplate.query(SQL_GET_ALL_PRIORITY, new ReminderMapper(), user_id);
+  }
   @Override
   public List<Reminder> selectOverdueReminders(Long user_id) {
     log.info("select all overdue reminders in dao for user with id: {}", user_id);

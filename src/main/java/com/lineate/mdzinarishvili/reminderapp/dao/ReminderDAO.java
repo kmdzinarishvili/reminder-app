@@ -29,6 +29,8 @@ public interface ReminderDAO {
   boolean setCompletedDate(LocalDateTime dateTime, Long id);
 
   List<Reminder> selectOverdueReminders(Long user_id);
+  List<Reminder> selectRemindersOrderByCreationDate(Long user_id);
+  List<Reminder> selectRemindersOrderByPriority(Long user_id);
 
 
 }

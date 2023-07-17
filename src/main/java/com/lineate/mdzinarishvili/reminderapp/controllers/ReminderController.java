@@ -28,9 +28,30 @@ public class ReminderController {
     return reminderService.getReminders();
   }
 
-  @GetMapping("/today")
-  public List<Reminder> getTodayReminders() {
-    return reminderService.getRemindersToday();
+  @GetMapping("/today/creation")
+  public List<Reminder> getTodayRemindersOrderByCreation() {
+    return reminderService.getRemindersTodayByCreation();
+  }
+  @GetMapping("/today/priority")
+  public List<Reminder> getTodayRemindersOrderByPriority() {
+    return reminderService.getRemindersTodayByPriority();
+  }
+  @GetMapping("/tomorrow/creation")
+  public List<Reminder> getTomorrowRemindersOrderByCreation() {
+    return reminderService.getRemindersTomorrowByCreation();
+  }
+  @GetMapping("/tomorrow/priority")
+  public List<Reminder> getTomorrowRemindersOrderByPriority() {
+    return reminderService.getRemindersTomorrowByPriority();
+  }
+
+  @GetMapping("/week/creation")
+  public List<Reminder> getWeekRemindersOrderByCreation() {
+    return reminderService.getRemindersWeekByCreation();
+  }
+  @GetMapping("/week/priority")
+  public List<Reminder> getWeekRemindersOrderByPriority() {
+    return reminderService.getRemindersWeekByPriority();
   }
   @GetMapping("/tomorrow")
   public List<Reminder> listRemindersTomorrow() {

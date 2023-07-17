@@ -50,6 +50,24 @@ public class ReminderService {
     });
     return filtered;
   }
+  public List<Reminder> getRemindersOrderByPriority() {
+    User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    Long user_id = user.getId();
+    log.info("reminder service get all reminders by priority function called by user with username: {}",
+        user.getUsername());
+    List<Reminder> reminders = reminderDao.selectRemindersOrderByPriority(user_id);
+    return groupReminders(reminders);
+  }
+
+  public List<Reminder> getRemindersOrderByCreation() {
+    User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    Long user_id = user.getId();
+    log.info("reminder service get all reminders by creation function called by user with username: {}",
+        user.getUsername());
+    List<Reminder> reminders = reminderDao.selectRemindersOrderByCreationDate(user_id);
+    return groupReminders(reminders);
+  }
+
   public List<Reminder> getReminders() {
     User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     Long user_id = user.getId();
@@ -222,12 +240,10 @@ public class ReminderService {
   private boolean checkUpcomingReminder(LocalDate reminderCompleted, LocalDateTime date){
     return reminderCompleted ==null || reminderCompleted.isBefore(date.toLocalDate());
   }
-  private List<Reminder> getRemindersDay(LocalDateTime date) {
+  private List<Reminder> getRemindersDay(LocalDateTime date, List<Reminder> reminders) {
     User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     log.info("reminder service get reminders on the day {}  called by user with username: {}",
         date, user.getUsername());
-    List<Reminder> reminders = getReminders();
-    reminders = groupReminders(reminders);
     List<Reminder> dateReminders = new ArrayList<>();
     reminders.forEach((reminder) -> {
       LocalTime reminderTime = reminder.getDate().toLocalTime();
@@ -265,13 +281,12 @@ public class ReminderService {
   }
 
 
-  private List<Reminder> getRemindersPeriod(LocalDateTime startDate, int howManyDays) {
+  private List<Reminder> getRemindersPeriod(LocalDateTime startDate, int howManyDays, List<Reminder> reminders) {
     User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     log.info(
         "reminder service get reminders in between {} for {} days  function called by user with username: {}",
         startDate, howManyDays, user.getUsername());
     LocalDateTime end = LocalDateTime.now().plusDays(howManyDays);
-    List<Reminder> reminders = getReminders();
     List<Reminder> newReminders = new ArrayList<>();
     reminders.forEach((reminder) -> {
       LocalDateTime reminderDate = reminder.getDate();
@@ -310,19 +325,38 @@ public class ReminderService {
     });
     return newReminders;
   }
+
   public List<Reminder> getRemindersToday() {
     User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     log.info(
         "reminder service get reminders function called for today by user with username: {}",
-         user.getUsername());
-    return getRemindersDay(LocalDateTime.now());
+        user.getUsername());
+    List<Reminder> reminders = getReminders();
+    return getRemindersDay(LocalDateTime.now(), reminders);
+  }
+  public List<Reminder> getRemindersTodayByCreation() {
+    User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    log.info(
+        "reminder service get reminders function called for today by user with username: {}",
+        user.getUsername());
+    List<Reminder> reminders = getRemindersOrderByCreation();
+    return getRemindersDay(LocalDateTime.now(),reminders);
+  }
+  public List<Reminder> getRemindersTodayByPriority() {
+    User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    log.info(
+        "reminder service get reminders function called for today by user with username: {}",
+        user.getUsername());
+    List<Reminder> reminders = getRemindersOrderByPriority();
+    return getRemindersDay(LocalDateTime.now(),reminders);
   }
   public List<Reminder> getRemindersTomorrow() {
     User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     log.info(
         "reminder service get reminders function called for tomorrow by user with username: {}",
         user.getUsername());
-    return  getRemindersDay(LocalDateTime.now().toLocalDate().atStartOfDay().plusDays(1));
+    List<Reminder> reminders = getReminders();
+    return  getRemindersDay(LocalDateTime.now().toLocalDate().atStartOfDay().plusDays(1), reminders);
   }
   public List<Reminder> getRemindersWeek() {
     User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -331,7 +365,8 @@ public class ReminderService {
         user.getUsername());
     LocalDateTime today = LocalDateTime.now();
     int lengthOfWeek = 7;
-    return getRemindersPeriod(today, lengthOfWeek);
+    List<Reminder> reminders = getReminders();
+    return getRemindersPeriod(today, lengthOfWeek, reminders );
   }
 
   public ReminderResponse addNewReminder(ReminderRequest reminderRequest) {
@@ -460,6 +495,45 @@ public class ReminderService {
           user.getUsername(), id);
       throw new NotFoundException(String.format("Reminder with id %s not found", id));
     }
+  }
+
+  public List<Reminder> getRemindersTomorrowByCreation() {
+    User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    log.info(
+        "reminder service get reminders function called for today by user with username: {}",
+        user.getUsername());
+    List<Reminder> reminders = getRemindersOrderByCreation();
+    return getRemindersDay(LocalDateTime.now().toLocalDate().atStartOfDay().plusDays(1),reminders);
+  }
+
+  public List<Reminder> getRemindersTomorrowByPriority() {
+    User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    log.info(
+        "reminder service get reminders function called for today by user with username: {}",
+        user.getUsername());
+    List<Reminder> reminders = getRemindersOrderByPriority();
+    return getRemindersDay(LocalDateTime.now().toLocalDate().atStartOfDay().plusDays(1),reminders);
+  }
+
+  public List<Reminder> getRemindersWeekByCreation() {
+    User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    log.info(
+        "reminder service get reminders function called for this week order by creation by user with username: {}",
+        user.getUsername());
+    LocalDateTime today = LocalDateTime.now();
+    int lengthOfWeek = 7;
+    List<Reminder> reminders = getRemindersOrderByCreation();
+    return getRemindersPeriod(today, lengthOfWeek, reminders );
+  }
+  public List<Reminder> getRemindersWeekByPriority() {
+    User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    log.info(
+        "reminder service get reminders function called for this week order by prioirty by user with username: {}",
+        user.getUsername());
+    LocalDateTime today = LocalDateTime.now();
+    int lengthOfWeek = 7;
+    List<Reminder> reminders = getRemindersWeekByPriority();
+    return getRemindersPeriod(today, lengthOfWeek, reminders);
   }
 }
 
