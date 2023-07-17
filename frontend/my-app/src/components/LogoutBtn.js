@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import useAuth from '../hooks/useAuth';
+import {post} from '../helper/post';
 import axios from 'axios';
 
 const LOGOUT_URL = '/auth/logout';
@@ -11,16 +12,10 @@ const LogoutBtn = () => {
 
 
     const logout = async () => {
-        const response = await axios.post(BASE_URL+LOGOUT_URL,
-            null,
-            {
-                headers: { 
-                    'Content-Type': 'application/json', 
-                    'Authorization': "Bearer "+ auth.accessToken,
-                }, 
-                withCredentials:true
-            } 
-        );
+        const response = await post({urlExtension: LOGOUT_URL,
+            body:null,
+            accessToken:auth.accessToken
+        });
         if(response.status ===200 ){
             setAuth({});
             navigate('/login');
