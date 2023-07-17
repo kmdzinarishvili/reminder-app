@@ -4,6 +4,7 @@ import com.lineate.mdzinarishvili.reminderapp.dao.ReminderDAO;
 import com.lineate.mdzinarishvili.reminderapp.dto.ReminderRequest;
 import com.lineate.mdzinarishvili.reminderapp.enums.CategoryType;
 import com.lineate.mdzinarishvili.reminderapp.enums.RecurrenceType;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -31,11 +32,12 @@ public class Reminder implements Comparable<Reminder> {
   private List<Label> labels = new ArrayList<>();
   private User user;
   private Boolean acceptanceStatus;
+  private LocalDate whichCompleted;
 
 
   public Reminder(Long id, String title, LocalDateTime date, RecurrenceType recurrence,
                   byte[] attachment, int priority, CategoryType category,
-                  Boolean acceptanceStatus, Label label) {
+                  Boolean acceptanceStatus, LocalDate whichCompleted, Label label) {
     this.id = id;
     this.title = title;
     this.date = date;
@@ -44,6 +46,7 @@ public class Reminder implements Comparable<Reminder> {
     this.priority = priority;
     this.category = category;
     this.acceptanceStatus = acceptanceStatus;
+    this.whichCompleted = whichCompleted;
     this.labels.add(label);
   }
 
