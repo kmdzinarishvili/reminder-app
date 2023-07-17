@@ -221,25 +221,28 @@ public class ReminderService {
     List<Reminder> dateReminders = new ArrayList<>();
     reminders.forEach((reminder) -> {
       LocalTime reminderTime = reminder.getDate().toLocalTime();
-      reminder.setDate(date.withHour(reminderTime.getHour()).withMinute(reminderTime.getMinute()));
       switch (reminder.getRecurrence()) {
         case NEVER:
           if (reminder.getDate().toLocalDate() == date.toLocalDate()) {
+            reminder.setDate(date.withHour(reminderTime.getHour()).withMinute(reminderTime.getMinute()));
             dateReminders.add(reminder);
           }
           break;
         case DAILY:
+          reminder.setDate(date.withHour(reminderTime.getHour()).withMinute(reminderTime.getMinute()));
           dateReminders.add(reminder);
           break;
         case WEEKLY:
           if (reminder.getDate().getDayOfWeek() ==
               date.getDayOfWeek()) {
+            reminder.setDate(date.withHour(reminderTime.getHour()).withMinute(reminderTime.getMinute()));
             dateReminders.add(reminder);
           }
           break;
         case MONTHLY:
           if (reminder.getDate().getDayOfMonth() ==
               date.getDayOfMonth()) {
+            reminder.setDate(date.withHour(reminderTime.getHour()).withMinute(reminderTime.getMinute()));
             dateReminders.add(reminder);
           }
           break;
@@ -289,9 +292,16 @@ public class ReminderService {
     });
     return newReminders;
   }
-
-  public List<Reminder> getReminders(GetRemindersRequest getRemindersRequest) {
-    TimePeriod timePeriod = getRemindersRequest.getTimePeriod();
+  public List<Reminder> getRemindersToday() {
+    return getRemindersDay(LocalDateTime.now());
+  }
+  public List<Reminder> getRemindersTomorrow() {
+    return getReminders(TimePeriod.TOMORROW);
+  }
+  public List<Reminder> getRemindersWeek() {
+    return getReminders(TimePeriod.WEEK);
+  }
+  public List<Reminder> getReminders(TimePeriod timePeriod) {
     User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     log.info(
         "reminder service get reminders function called with time period {} by user with username: {}",
