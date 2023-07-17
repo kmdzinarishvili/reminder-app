@@ -1,7 +1,7 @@
 package com.lineate.mdzinarishvili.reminderapp.config;
 
 import com.lineate.mdzinarishvili.reminderapp.dao.UserDaoImpl;
-import com.lineate.mdzinarishvili.reminderapp.exceptions.NotFoundException;
+import com.lineate.mdzinarishvili.reminderapp.exceptions.InvalidInputException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -27,7 +27,7 @@ public class ApplicationConfig {
       return repository.selectUserByUsername(username)
           .orElseThrow(() -> {
             log.error("Username not found {}", username);
-            return new NotFoundException(String.format("Username Not found %s", username));
+            return new InvalidInputException(String.format("Username Not found %s", username));
           });
     };
   }
