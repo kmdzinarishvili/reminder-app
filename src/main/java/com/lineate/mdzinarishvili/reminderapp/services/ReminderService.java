@@ -223,7 +223,7 @@ public class ReminderService {
       LocalTime reminderTime = reminder.getDate().toLocalTime();
       switch (reminder.getRecurrence()) {
         case NEVER:
-          if (reminder.getDate().toLocalDate() == date.toLocalDate()) {
+          if (reminder.getDate().toLocalDate().equals(date.toLocalDate())) {
             reminder.setDate(date.withHour(reminderTime.getHour()).withMinute(reminderTime.getMinute()));
             dateReminders.add(reminder);
           }
