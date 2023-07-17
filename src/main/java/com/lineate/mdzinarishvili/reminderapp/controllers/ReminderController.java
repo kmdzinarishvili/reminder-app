@@ -28,9 +28,17 @@ public class ReminderController {
     return reminderService.getReminders();
   }
 
-  @GetMapping("/limited_time")
-  public List<Reminder> listRemindersByTime(@RequestBody GetRemindersRequest getRemindersRequest) {
-    return reminderService.getReminders(getRemindersRequest);
+  @GetMapping("/today")
+  public List<Reminder> getTodayReminders() {
+    return reminderService.getRemindersToday();
+  }
+  @GetMapping("/tomorrow")
+  public List<Reminder> listRemindersTomorrow() {
+    return reminderService.getRemindersTomorrow();
+  }
+  @GetMapping("/week")
+  public List<Reminder> listRemindersThisWeek() {
+    return reminderService.getRemindersWeek();
   }
 
   @GetMapping("/old")

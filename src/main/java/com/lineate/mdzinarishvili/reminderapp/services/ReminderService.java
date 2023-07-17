@@ -293,33 +293,27 @@ public class ReminderService {
     return newReminders;
   }
   public List<Reminder> getRemindersToday() {
+    User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    log.info(
+        "reminder service get reminders function called for today by user with username: {}",
+         user.getUsername());
     return getRemindersDay(LocalDateTime.now());
   }
   public List<Reminder> getRemindersTomorrow() {
-    return getReminders(TimePeriod.TOMORROW);
-  }
-  public List<Reminder> getRemindersWeek() {
-    return getReminders(TimePeriod.WEEK);
-  }
-  public List<Reminder> getReminders(TimePeriod timePeriod) {
     User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     log.info(
-        "reminder service get reminders function called with time period {} by user with username: {}",
-        timePeriod, user.getUsername());
-    switch (timePeriod) {
-      case TODAY:
-        return getRemindersDay(LocalDateTime.now());
-      case TOMORROW:
-        return getRemindersDay(LocalDateTime.now().plusDays(1));
-      case WEEK:
-        LocalDateTime today = LocalDateTime.now();
-        int lengthOfWeek = 7;
-        return getRemindersPeriod(today, lengthOfWeek);
-    }
-    log.error(
-        "reminder service get reminders function called with invalid time period by user with username: {}",
+        "reminder service get reminders function called for tomorrow by user with username: {}",
         user.getUsername());
-    throw new InvalidInputException("Invalid Time Period indicated");
+    return  getRemindersDay(LocalDateTime.now().plusDays(1));
+  }
+  public List<Reminder> getRemindersWeek() {
+    User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    log.info(
+        "reminder service get reminders function called for this week by user with username: {}",
+        user.getUsername());
+    LocalDateTime today = LocalDateTime.now();
+    int lengthOfWeek = 7;
+    return getRemindersPeriod(today, lengthOfWeek);
   }
 
   public ReminderResponse addNewReminder(ReminderRequest reminderRequest) {
