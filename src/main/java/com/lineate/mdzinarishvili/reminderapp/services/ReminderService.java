@@ -7,19 +7,16 @@ import com.lineate.mdzinarishvili.reminderapp.dto.ReminderCompletedRequest;
 import com.lineate.mdzinarishvili.reminderapp.dto.ReminderRequest;
 import com.lineate.mdzinarishvili.reminderapp.dto.ReminderResponse;
 import com.lineate.mdzinarishvili.reminderapp.enums.TimePeriod;
-import com.lineate.mdzinarishvili.reminderapp.exceptions.DatabaseException;
 import com.lineate.mdzinarishvili.reminderapp.exceptions.InvalidInputException;
 import com.lineate.mdzinarishvili.reminderapp.exceptions.NotFoundException;
 import com.lineate.mdzinarishvili.reminderapp.models.Label;
 import com.lineate.mdzinarishvili.reminderapp.models.Reminder;
 import com.lineate.mdzinarishvili.reminderapp.models.User;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cglib.core.Local;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -36,15 +33,27 @@ public class ReminderService {
     this.userDao = userDao;
   }
 
+  private List<Reminder> groupReminders(List<Reminder> reminders){
+    List<Reminder> filtered = new ArrayList<>();
+    reminders.forEach(r ->{
+      if(filtered.stream().anyMatch(rem-> rem.getId().equals(r.getId()))){
+        Reminder reminder =  filtered.stream()
+            .filter(rem-> rem.getId().equals(r.getId()))
+            .findFirst()
+            .orElse(null);
+        assert reminder != null;
+        reminder.addLabels(r.getLabels());
+      }
+    });
+    return filtered;
+  }
   public List<Reminder> getReminders() {
     User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     Long user_id = user.getId();
     log.info("reminder service get all reminders function called by user with username: {}",
         user.getUsername());
     List<Reminder> reminders = reminderDao.selectReminders(user_id);
-//    reminders.forEach();
-//get labelssssss
-    return reminders;
+    return groupReminders(reminders);
   }
 
   public boolean markReminderCompleted(ReminderCompletedRequest reminderCompletedRequest) {
@@ -108,6 +117,7 @@ public class ReminderService {
     log.info("reminder service get overdue reminders function called by user with username: {}",
         user.getUsername());
     List<Reminder> reminders = reminderDao.selectOverdueReminders(user_id);
+    reminders = groupReminders(reminders);
     List<Reminder> overdueReminders = new ArrayList<>();
     LocalDateTime today = LocalDateTime.now();
     reminders.forEach((reminder) -> {
@@ -152,7 +162,7 @@ public class ReminderService {
       LocalDateTime date = startDate.plusDays(i);
       if (reminderDate.getDayOfMonth() ==
           date.getDayOfMonth()) {
-        finalDate = date.withHour(reminderDate.getHour()).withMinute(reminderDate.getMinute());\
+        finalDate = date.withHour(reminderDate.getHour()).withMinute(reminderDate.getMinute());
         if(getFirst){
           return finalDate;
         }
@@ -418,12 +428,14 @@ public class ReminderService {
     log.info(
         "reminder service get reminder by id ({}) by user: {}",
         id, user.getUsername());
-    return reminderDao.selectReminderById(id)
-        .orElseThrow(() -> {
-          log.error(
-              "reminder service get reminder FAILED by user: {} for reminder with id {} because reminder id not found",
-              user.getUsername(), id);
-          return new NotFoundException(String.format("Reminder with id %s not found", id));
-        });
+    try{
+      return groupReminders(reminderDao.selectReminderById(id)).get(0);
+    }catch (Exception e) {
+      log.error(
+          "reminder service get reminder FAILED by user: {} for reminder with id {} because reminder id not found",
+          user.getUsername(), id);
+      throw new NotFoundException(String.format("Reminder with id %s not found", id));
+    }
   }
 }
+

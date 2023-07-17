@@ -10,7 +10,7 @@ import java.util.Optional;
 public interface ReminderDAO {
   List<Reminder> selectReminders(Long user_id);
 
-  Optional<Reminder> selectReminderById(Long id);
+  List<Reminder> selectReminderById(Long id);
 
   Reminder insertReminder(Reminder reminder);
 

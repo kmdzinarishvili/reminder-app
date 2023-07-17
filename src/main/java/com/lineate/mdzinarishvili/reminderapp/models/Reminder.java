@@ -7,6 +7,7 @@ import com.lineate.mdzinarishvili.reminderapp.enums.RecurrenceType;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.stream.Stream;
 import lombok.*;
 
 import java.util.Date;
@@ -30,24 +31,10 @@ public class Reminder implements Comparable<Reminder> {
   private User user;
   private Boolean acceptanceStatus;
 
-  public Reminder(ReminderRequest reminderRequest) {
-    this.title = reminderRequest.getTitle();
-    this.recurrence = reminderRequest.getRecurrence();
-    if (reminderRequest.getTime() != null) {
-      this.date =
-          LocalDateTime.of(reminderRequest.getDate(), reminderRequest.getTime());
-    } else {
-      this.date = LocalDateTime.of(reminderRequest.getDate(), LocalTime.of(0, 0, 0));
-
-    }
-    this.attachment = reminderRequest.getAttachment();
-    this.priority = reminderRequest.getPriority();
-    this.category = reminderRequest.getCategory();
-  }
 
   public Reminder(Long id, String title, LocalDateTime date, RecurrenceType recurrence,
                   byte[] attachment, int priority, CategoryType category,
-                  Boolean acceptanceStatus) {
+                  Boolean acceptanceStatus, Label label) {
     this.id = id;
     this.title = title;
     this.date = date;
@@ -56,8 +43,26 @@ public class Reminder implements Comparable<Reminder> {
     this.priority = priority;
     this.category = category;
     this.acceptanceStatus = acceptanceStatus;
+    this.labels.add(label);
   }
 
+  public Reminder(ReminderRequest reminderRequest) {
+    this.title = reminderRequest.getTitle();
+    if (reminderRequest.getTime() != null) {
+      this.date =
+          LocalDateTime.of(reminderRequest.getDate(), reminderRequest.getTime());
+    } else {
+      this.date = LocalDateTime.of(reminderRequest.getDate(), LocalTime.of(0, 0, 0));
+    }
+    this.recurrence = reminderRequest.getRecurrence();
+    this.attachment = reminderRequest.getAttachment();
+    this.priority = reminderRequest.getPriority();
+    this.category = reminderRequest.getCategory();
+  }
+
+  public void addLabels(List<Label> labels){
+    this.labels = Stream.concat(this.labels.stream(), labels.stream()).toList();
+  }
   @Override
   public int compareTo(Reminder reminder) {
     if (this.getDate() == null || reminder.getDate() == null) {

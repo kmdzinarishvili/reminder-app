@@ -92,14 +92,16 @@ public class ReminderDAOImpl implements ReminderDAO {
             Boolean.class, id));
   }
 
-
   @Override
   public List<Reminder> selectReminders(Long user_id) {
     log.info("select all reminders in dao for user with id: {}", user_id);
     final String SQL_GET_ALL =
-        "select r.*, rt.recurrence_name from reminders r " +
+        "select r.*, rt.recurrence_name, lr.label_id, l.label_name, c.category_name  from reminders r " +
             " join recurrence_types rt " +
             " on r.recurrence_id = rt.recurrence_id " +
+            " join categories c using (category_id)" +
+            " join labels_reminders lr using (reminder_id)" +
+            " join labels l using(label_id)" +
             " where user_id = ?";
     return jdbcTemplate.query(SQL_GET_ALL, new ReminderMapper(), user_id);
   }
@@ -132,7 +134,7 @@ public class ReminderDAOImpl implements ReminderDAO {
   }
 
   @Override
-  public Optional<Reminder> selectReminderById(Long id) {
+  public List<Reminder> selectReminderById(Long id) {
     if (!isIdValid(id)) {
       log.error("select reminder by id FAILED invalid id: {}", id);
       throw new DatabaseException("ID not found");
@@ -140,11 +142,14 @@ public class ReminderDAOImpl implements ReminderDAO {
     log.info("select reminder by id: {}", id);
     final String SQL_FIND_REMINDER =
         "select r.*, rt.recurrence_name from reminders r " +
-            "join recurrence_types rt " +
-            "on r.recurrence_id = rt.recurrence_id " +
+            " join recurrence_types rt " +
+            " on r.recurrence_id = rt.recurrence_id " +
+            " join categories c using (category_id)" +
+            " join labels_reminders lr using (reminder_id)" +
+            " join labels l using(label_id)" +
             " where reminder_id = ?";
     List<Reminder> reminders = jdbcTemplate.query(SQL_FIND_REMINDER, new ReminderMapper(), id);
-    return reminders.stream().findFirst();
+    return reminders;
   }
 
   @Override
@@ -184,8 +189,9 @@ public class ReminderDAOImpl implements ReminderDAO {
       log.error("update reminder FAILED");
       throw new DatabaseException("oops something went wrong, could not insert");
     }
-
   }
+
+  //TO DO UPDATE LABELS
 
   @Override
   public Reminder insertReminder(Reminder reminder) {
@@ -234,7 +240,7 @@ public class ReminderDAOImpl implements ReminderDAO {
     Reminder reminder;
     try {
       log.info("check reminder pending for id: {}", id);
-      reminder = selectReminderById(id).get();
+      reminder = selectReminderById(id).get(0);
     } catch (Exception e) {
       log.error("check reminder pending FAILED invalid id: {}", id);
       throw new InvalidInputException("Reminder with id not found");
@@ -245,7 +251,7 @@ public class ReminderDAOImpl implements ReminderDAO {
   public boolean setAcceptedTrue(Long id) {
     try {
       log.info("set reminder accepted true for id: {}", id);
-      selectReminderById(id).get();
+      selectReminderById(id).get(0);
     } catch (Exception e) {
       log.error("check reminder accepted true for id: {} failed id not found", id);
       throw new InvalidInputException("Reminder with id not found");

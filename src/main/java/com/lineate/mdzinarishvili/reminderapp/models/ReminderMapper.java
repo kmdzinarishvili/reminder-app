@@ -17,7 +17,9 @@ public class ReminderMapper implements RowMapper<Reminder> {
         resultSet.getBytes("attachment"),
         resultSet.getInt("priority"),
         CategoryType.valueOf(resultSet.getString("category_name")),
-        resultSet.getBoolean("acceptance_status")
+        resultSet.getBoolean("acceptance_status"),
+        new Label(resultSet.getLong("label_id"),
+        resultSet.getString("label_name"))
     );
   }
 }
