@@ -6,6 +6,7 @@ import com.lineate.mdzinarishvili.reminderapp.enums.CategoryType;
 import com.lineate.mdzinarishvili.reminderapp.enums.RecurrenceType;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 import lombok.*;
@@ -27,7 +28,7 @@ public class Reminder implements Comparable<Reminder> {
   private byte[] attachment;
   private int priority;
   private CategoryType category;
-  private List<Label> labels;
+  private List<Label> labels = new ArrayList<>();
   private User user;
   private Boolean acceptanceStatus;
 
