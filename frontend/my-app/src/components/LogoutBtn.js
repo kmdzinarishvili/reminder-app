@@ -11,7 +11,7 @@ const LogoutBtn = () => {
 
 
     const logout = async () => {
-        const response = await axios.post("/api/v1"+LOGOUT_URL,
+        const response = await axios.post(BASE_URL+LOGOUT_URL,
             null,
             {
                 headers: { 

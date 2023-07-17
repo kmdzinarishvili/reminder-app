@@ -4,22 +4,44 @@ import useAuth from "../hooks/useAuth";
 import LogoutBtn from "../components/LogoutBtn";
 import axios from 'axios';
 import Reminder from "../components/Reminder";
+import { query } from "../helper/query";
  
-const {REACT_APP_API_BASE_URL} = process.env;
+const {REACT_APP_API_BASE_URL: BASE_URL} = process.env;
+const OVERDUE = '/reminders/overdue';
+const TODAY = '/reminders/today';
+const TOMORROW = '/reminders/tomorrow';
+const THIS_WEEK = '/reminders/week'
 
-const NavBar = () =>{
+const NavBar = ({setData}) =>{
 
     const {auth} = useAuth();
     const fetchToday = async () =>{
-        alert("pressed today")
+        const response = await query(
+            {urlExtension:TODAY,
+            accessToken:auth.accessToken}
+        );
+        console.log('fetching tomorrow', response)
+        setData(response?.data);
     }
 
-    const fetchTomorrow = () =>{
+    const fetchTomorrow = async() =>{
+        const response = await query(
+            {urlExtension:TOMORROW,
+            accessToken:auth.accessToken}
+        );
+        console.log('fetching tomorrow', response)
+        setData(response?.data);
     }
 
-    const fetchThisWeek =  () => {
+    const fetchThisWeek = async () => {
+        const response = await query(
+            {urlExtension:THIS_WEEK,
+            accessToken:auth.accessToken}
+        );
+        console.log('fetching this week', response)
+        setData(response?.data);
     }
-    return <div className="header">
+    return <div className="row">
             <button onClick={fetchToday}>Today</button>
             <button onClick={fetchTomorrow}>Tomorrow</button>
             <button onClick={fetchThisWeek}>This Week</button>
@@ -30,13 +52,13 @@ const NavBar = () =>{
 const Home = () => {
     const { auth } = useAuth();
     const navigate = useNavigate();
-    const [data, setData]= useState();
+    const [data, setData]= useState([]);
     const [overdueReminders, setOverdueReminders] = useState([]);
     const addReminder = () =>{
         navigate('/add');
     }
     const getOverdueReminders = async () => {
-        const response = await axios.get('http://localhost:8080/api/v1/reminders/overdue',
+        const response = await axios.get(BASE_URL+OVERDUE,
         {
             headers: { 
                 'Content-Type': 'application/json', 
@@ -44,7 +66,6 @@ const Home = () => {
             }, 
         }
         );
-        console.log(response);
         setOverdueReminders(response?.data);
     }
     useEffect(()=>{
@@ -57,12 +78,16 @@ const Home = () => {
             <button onClick={addReminder}>Add Reminder</button>
                 <h4>Overdue: </h4>
                 <div>
-                    {overdueReminders.map((item)=>
-                        <Reminder item={item}/>
+                    {overdueReminders.map((reminder)=>
+                        <Reminder key={reminder.id} reminder={reminder}/>
                     )}
                 </div>
-                <NavBar/>
-
+                <NavBar setData={setData}/>
+                <div>
+                    {data.map((reminder)=>
+                        <Reminder key={reminder.id} reminder={reminder}/>
+                    )}
+                </div>
                 <LogoutBtn/>
             </div>
         </section>
