@@ -432,6 +432,7 @@ public class ReminderService {
           "reminder service update reminder assigned by user: {} with data {}",
           user.getUsername(), reminderRequest);
       Reminder reminder = new Reminder(reminderRequest);
+      reminder.setUser(user);
       reminder.setId(id);
       return new ReminderResponse(reminderDao.updateReminder(reminder));
     } catch (Exception e) {

@@ -11,6 +11,7 @@ import NotFound from './pages/NotFound';
 import AddReminder from './pages/AddReminder';
 
 import './App.css';
+import EditReminder from './pages/EditReminder';
 
 
 function App() {
@@ -24,7 +25,7 @@ function App() {
         <Route element={<RequireAuth allowedRole={"USER"} />}>
           <Route path="/" element={<Home />} />
           <Route path="/add" element={<AddReminder />} />
-
+          <Route path="/edit" element={<EditReminder />} />
         </Route>
 
         <Route element={<RequireAuth allowedRole={"ADMIN"} />}>

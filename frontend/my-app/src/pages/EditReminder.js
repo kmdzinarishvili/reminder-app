@@ -1,38 +1,46 @@
+import React, { useEffect } from 'react';
 import { useState } from 'react';
 import useAuth from '../hooks/useAuth';
 import { post } from '../helper/post';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import Labels from '../components/Labels';
+import axios from 'axios';
+import FileUploader from '../components/FileUploader';
+const {REACT_APP_API_BASE_URL: BASE_URL} = process.env;
+const padWithLeadingZeros = (num) =>{
+    return String(num).padStart(2, '0');
+}
 
-const AddReminder = () =>{
+const EditReminder = () =>{
+    const { state } = useLocation();
+    const {reminder} = state;
     const navigate = useNavigate();
-
-    const [title, setTitle] = useState();
-    const [recurrence, setRecurrence] = useState('NEVER');
-    const [date, setDate] = useState();
-    const [time, setTime] = useState();
-    const [priority, setPriority] = useState(1);
-    const [category, setCategory] = useState('WORK');
-    const [showUsername, setShowUsername] = useState(false);
-    const [toSomeone, setToSomeone] = useState('');
-    const [labels, setLabels] = useState();
-    const [attachment, setAttachment] = useState();
+    const [title, setTitle] = useState(reminder.title);
+    const [recurrence, setRecurrence] = useState(reminder.recurrence);
+    console.log(reminder.date)
+    const [date, setDate] = useState(`${reminder.date[0]}-${padWithLeadingZeros(reminder.date[1])}-${padWithLeadingZeros(reminder.date[2])}`);
+    const [time, setTime] = useState(`${padWithLeadingZeros(reminder.date[3])}:${padWithLeadingZeros(reminder.date[4])}`);
+    const [priority, setPriority] = useState(reminder.priority);
+    const [category, setCategory] = useState(reminder.category);
+    const [labels, setLabels] = useState(reminder.labels);
     const { auth } = useAuth();
     const [errMsg, setErrMsg]=useState();
-    
+
+    const initLabels = labels.map(i=>{
+        return {
+            value: i.name
+          }
+        }
+    )
+    useEffect(()=>{
+        
+    },[])
     const handleSubmit= async (e) => {
       e.preventDefault();
       console.log(title, recurrence, date, time, priority, category, labels)
       const data = {title,recurrence,date,time,priority,category,labels};
-      if(showUsername){
-        if(toSomeone.includes("@")){
-          data['userEmail'] = toSomeone;
-        }else{
-          data['userUsername'] = toSomeone;
-        }
-      }
-      await post({urlExtension:'/reminders',
+      await post({urlExtension:`/reminders/${reminder.id}/update`,
           body:data,
           accessToken:auth.accessToken
       }).then(res => {
@@ -108,31 +116,11 @@ const AddReminder = () =>{
           value={priority}
           onChange={e => setPriority(e.target.value)}
         />
-        <br/>
-        <div>
-        <input 
-            type="checkbox"
-            id="show"
-            name="show" 
-            value ={showUsername}
-            onChange={e => {
-                console.log(e.target.value);
-                setShowUsername(prev=> !prev)
-            }} 
-
-        />
-        <label>Assign To Someone Else</label>
-        </div>
-        {showUsername&&<input 
-          name='title' 
-          type='text'
-          value={toSomeone}
-          onChange={e => setToSomeone(e.target.value)}
-        />
-        }
+        <br/>       
+      
         <br/>
         <label>Labels:</label>
-        <Labels setLabels={setLabels}/>
+        <Labels initLabels={initLabels} setLabels={setLabels}/>
         {/* <FileUploader setAttachment={setAttachment}/> */}
         <br/>
         {errMsg}
@@ -145,4 +133,4 @@ const AddReminder = () =>{
     )
   }
 
-export default AddReminder;
+export default EditReminder;

@@ -1,22 +1,15 @@
 
 import {useState,useEffect} from 'react';
 
-export default function Labels ({setLabels}) {
-    const inputArr = [
-    {
-      type: "text",
-      id: 1,
-      value: ""
-    }
-  ];
-
-  const [arr, setArr] = useState(inputArr);
+export default function Labels ({initLabels, setLabels}) {
+  const [arr, setArr] = useState(initLabels);
   useEffect(()=>{
     const localLabels = arr.map(a => a.value)
     console.log(localLabels);
     setLabels(localLabels)
   },[arr])
-  const addInput = () => {
+  const addInput = (e) => {
+    e.preventDefault()
     setArr(s => {
       return [
         ...s,
@@ -26,9 +19,10 @@ export default function Labels ({setLabels}) {
       ];
     });
   };
-  const removeInput = () => {
+  const removeInput = (e) => {
+    e.preventDefault()
     setArr(s => {
-        return arr.slice(0, -1);;
+        return s.slice(0, -1);;
     })
   };
 
@@ -46,6 +40,7 @@ export default function Labels ({setLabels}) {
   return (
     <div className='box'>
       {arr.map((item, i) => {
+        console.log(item.value)
         return (
           <input
             key={i+item}
