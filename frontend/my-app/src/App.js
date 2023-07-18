@@ -9,7 +9,7 @@ import Unauthorized from './pages/Unauthorized';
 import RequireAuth from './pages/RequireAuth';
 import NotFound from './pages/NotFound';
 import AddReminder from './pages/AddReminder';
-
+import EditProfile from './pages/EditProfile';
 import './App.css';
 import EditReminder from './pages/EditReminder';
 
@@ -26,6 +26,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/add" element={<AddReminder />} />
           <Route path="/edit" element={<EditReminder />} />
+          <Route path="/profile" element={<EditProfile />} />
         </Route>
 
         <Route element={<RequireAuth allowedRole={"ADMIN"} />}>

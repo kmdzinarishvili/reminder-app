@@ -18,7 +18,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-
 public class User implements UserDetails {
   private Long id;
   private String username;

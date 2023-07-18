@@ -3,6 +3,7 @@ package com.lineate.mdzinarishvili.reminderapp.services;
 import com.lineate.mdzinarishvili.reminderapp.dao.UserDao;
 import com.lineate.mdzinarishvili.reminderapp.dao.UserDao;
 import com.lineate.mdzinarishvili.reminderapp.dto.DeleteUserRequest;
+import com.lineate.mdzinarishvili.reminderapp.dto.UserRequest;
 import com.lineate.mdzinarishvili.reminderapp.dto.UserResponse;
 import com.lineate.mdzinarishvili.reminderapp.dto.UsersRequest;
 import com.lineate.mdzinarishvili.reminderapp.enums.UsersSortType;
@@ -40,14 +41,18 @@ public class UserService {
     return userDao.insertUser(user).orElseThrow();
   }
 
-  public User updateUser(User user) {
-    UserDetails userDetails =
-        (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    String username = userDetails.getUsername();
-    log.info("User: {} made update request for user with username: {}", username,
-        user.getUsername());
+  public UserResponse updateUser(UserRequest userRequest) {
+    User user =
+        (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    String username = user.getUsername();
+    System.out.println("user from security context"+user);
+    log.info("User: {} made update request with data {}", username,
+        userRequest);
+    user.setUsername(userRequest.getUsername());
+    user.setTimezoneOffsetHours(userRequest.getTimezoneOffsetHours());
+    user.setDaysBeforeReminderDelete(userRequest.getDaysBeforeReminderDelete());
     User result = userDao.updateUser(user).orElseThrow();
-    return result;
+    return new UserResponse(result);
   }
 
   public void deleteUser(Long id) {

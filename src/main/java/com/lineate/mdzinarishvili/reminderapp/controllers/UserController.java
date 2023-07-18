@@ -1,5 +1,6 @@
 package com.lineate.mdzinarishvili.reminderapp.controllers;
 
+import com.lineate.mdzinarishvili.reminderapp.dto.UserRequest;
 import com.lineate.mdzinarishvili.reminderapp.dto.UserResponse;
 import com.lineate.mdzinarishvili.reminderapp.models.User;
 import com.lineate.mdzinarishvili.reminderapp.services.UserService;
@@ -21,14 +22,16 @@ public class UserController {
     return userService.getLoggedInUserData();
   }
 
+
+  @PostMapping("/update")
+  public UserResponse updateLoggedInUser(@RequestBody UserRequest user) { // maybe add user dto
+    return userService.updateUser(user);
+  }
+
+
 //  @DeleteMapping("/")
 //  public User deleteLoggedInUser() {
 //    return userService.getLoggedInUserData();
 //  }
-
-  @PostMapping("/update")
-  public User updateLoggedInUser(@RequestBody User user) { // maybe add user dto
-    return userService.updateUser(user);
-  }
 
 }

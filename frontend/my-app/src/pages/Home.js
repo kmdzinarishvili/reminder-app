@@ -20,7 +20,7 @@ const CREATION = '/creation';
 const PRIORITY = '/priority';
 
 
-const NavBar = ({setWhichFetch}) =>{
+const NavBar = ({setWhichFetch, howManyDays}) =>{
     const fetchOld = async () =>{
         setWhichFetch("OLD")
     }
@@ -34,7 +34,7 @@ const NavBar = ({setWhichFetch}) =>{
         setWhichFetch("WEEK")
     }
     return <div className="row">
-        <button onClick={fetchOld}>Previous {} days</button>
+        <button onClick={fetchOld}>Previous {howManyDays} days</button>
         <button onClick={fetchToday}>Today</button>
         <button onClick={fetchTomorrow}>Tomorrow</button>
         <button onClick={fetchThisWeek}>This Week</button>
@@ -50,6 +50,7 @@ const Home = () => {
     const [orderBy, setOrderBy] = useState(PRIORITY);
     const [whichFetch, setWhichFetch] = useState("TODAY");
     const [fetchToggle, setFetchToggle] = useState(false);
+    const [userData, setUserData] = useState([]);
     const addReminder = () =>{
         navigate('/add');
     }
@@ -122,22 +123,28 @@ const Home = () => {
     
     const getUserData = async () => {
         const response = await axios.get(BASE_URL+USER,
-        {
-            headers: { 
-                'Content-Type': 'application/json', 
-                'Authorization': "Bearer "+ auth.accessToken,
-            }, 
-        }
+            {
+                headers: { 
+                    'Content-Type': 'application/json', 
+                    'Authorization': "Bearer "+ auth.accessToken,
+                }, 
+            }
         );
+        setUserData(response.data);
     }
-
 
     useEffect(()=>{
         getUserData();
     },[])
 
+    const editProfile = (e) =>{
+        e.preventDefault()
+        navigate("/profile", {state:{userData}})
+    }
+
     return (
         <section className="page">
+            <img onClick={editProfile} className="user-icon icon" src="user_icon.png" alt="profile"/>
             <h1>Home</h1>
             <div className="flexGrow">
             <button onClick={addReminder}>Add Reminder</button>
@@ -147,7 +154,7 @@ const Home = () => {
                         <Reminder key={reminder.id} reminder={reminder} setFetchToggle={setFetchToggle}/>
                     )}
                 </div>
-                <NavBar setWhichFetch={setWhichFetch}/>
+                <NavBar setWhichFetch={setWhichFetch} howManyDays={userData.daysBeforeReminderDelete}/>
                 {whichFetch!=="OLD"&&
                    <div className="App">
                      <h3>Order by:</h3>

@@ -18,7 +18,6 @@ const EditReminder = () =>{
     const navigate = useNavigate();
     const [title, setTitle] = useState(reminder.title);
     const [recurrence, setRecurrence] = useState(reminder.recurrence);
-    console.log(reminder.date)
     const [date, setDate] = useState(`${reminder.date[0]}-${padWithLeadingZeros(reminder.date[1])}-${padWithLeadingZeros(reminder.date[2])}`);
     const [time, setTime] = useState(`${padWithLeadingZeros(reminder.date[3])}:${padWithLeadingZeros(reminder.date[4])}`);
     const [priority, setPriority] = useState(reminder.priority);
