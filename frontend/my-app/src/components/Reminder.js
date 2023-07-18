@@ -7,9 +7,18 @@ const {REACT_APP_API_BASE_URL:BASE_URL} = process.env;
 const MARK_AS_COMPLETED = '/reminders/completed';
 const REMINDERS = '/reminders/'
 
-const Reminder = ({reminder, setFetchToggle}) =>{
+function toTitleCase(str) {
+    return str.replace(
+      /\w\S*/g,
+      function(txt) {
+        return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+      }
+    );
+  }
+
+const Reminder = ({reminder, setFetchToggle, isOld}) =>{
     const {auth} = useAuth();
-    const {id, date, title, recurrence, priority} = reminder;
+    const {id, date, title, recurrence, priority, labels} = reminder;
     const formattedDate = `${date[2]}/${date[1]}/${date[0]}`
     const navigate = useNavigate();
     const markAsCompleted = async () =>{
@@ -21,6 +30,7 @@ const Reminder = ({reminder, setFetchToggle}) =>{
             setFetchToggle(prev=>!prev);
         }
     }
+    console.log("LABELS", labels)
     const redirectToEdit = ()=>{
         navigate('/edit', {state:{reminder}})
     }
@@ -47,6 +57,13 @@ const Reminder = ({reminder, setFetchToggle}) =>{
         <p>{recurrence}</p>
         <p> Date: {formattedDate} </p>
         <p> Priority: {priority}</p>
+        {labels.length>0&& 
+            <p> Labels: {labels.map(l=>{
+                console.log(l);
+                console.log(toTitleCase(l));
+                return toTitleCase(l)
+            }).toString()}</p>
+        }
         <img onClick={redirectToEdit}className="edit icon" src="edit_icon.png" alt="edit"/>
         <img onClick={deleteReminder}className="delete icon" src="trash_icon.png" alt="delete"/>
     </div>

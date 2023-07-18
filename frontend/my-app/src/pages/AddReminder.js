@@ -23,6 +23,8 @@ const AddReminder = () =>{
     
     const handleSubmit= async (e) => {
       e.preventDefault();
+      let filteredLabels = labels.filter(l => l.trim().length>0 )
+      console.log("filtered", filteredLabels)
       console.log(title, recurrence, date, time, priority, category, labels)
       const data = {title,recurrence,date,time,priority,category,labels};
       if(showUsername){
@@ -36,6 +38,7 @@ const AddReminder = () =>{
           body:data,
           accessToken:auth.accessToken
       }).then(res => {
+        console.log(res);
         navigate("/")
       }).catch(err =>{
         if(err.response.data){
@@ -58,6 +61,7 @@ const AddReminder = () =>{
           type='text'
           value={title}
           onChange={e => setTitle(e.target.value)}
+          required
         />
         <br/>
         <label className='label'>Recurrence:</label>
@@ -92,6 +96,7 @@ const AddReminder = () =>{
           type='date'
           value={date}
           onChange={e => setDate(e.target.value)}
+          required
         />
         <br/>
         <label className='label'>Time:</label>

@@ -210,3 +210,8 @@ input{
   justify-content: space-around;
   border: 1px solid grey;
 }
+
+.reminder-cont{
+ width:1500px;
+ background-color: red;
+}

@@ -28,7 +28,7 @@ const EditReminder = () =>{
 
     const initLabels = labels.map(i=>{
         return {
-            value: i.name
+            value: i
           }
         }
     )
@@ -46,7 +46,7 @@ const EditReminder = () =>{
         navigate("/")
       }).catch(err =>{
         if(err.response.data){
-          setErrMsg("User with this identifier not found");
+          setErrMsg(err.response.data);
         }else {
           setErrMsg("Please enter all requried fields");
         }
@@ -123,6 +123,8 @@ const EditReminder = () =>{
         <br/>
         {errMsg}
         <br/>
+        <br/>
+
         <input 
           type='submit' 
           value='Add Reminder' 

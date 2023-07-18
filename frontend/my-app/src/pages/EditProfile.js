@@ -22,8 +22,15 @@ const EditProfile = () =>{
     const { auth, setAuth } = useAuth();
     const [errMsg, setErrMsg]=useState();
 
+    const isUnchanged = () =>{
+      return username ===  userData.username && timeZone === userData.timezoneOffsetHours && numDays === numDays;
+    }
     const handleSubmit= async (e) => {
       e.preventDefault();
+      if(isUnchanged()){
+        setErrMsg("No changes were made");
+        return;
+      }
       const data = {username,timezoneOffsetHours:timeZone,daysBeforeReminderDelete: numDays};
       await post({urlExtension:`/user/update`,
           body:data,
@@ -31,8 +38,9 @@ const EditProfile = () =>{
       }).then(res => {
         navigate("/")
       }).catch(err =>{
+        console.log(err);
         if(err.response.data){
-          setErrMsg("User with this identifier not found");
+          setErrMsg(err.response.data);
         }else {
           setErrMsg("Please enter all requried fields");
         }
@@ -103,9 +111,11 @@ const EditProfile = () =>{
         />
         <br/>       
         {errMsg}
+        <br/>   
+        <br/>         
         <div className='button-container'>
           <button onClick={deleteAccount} className='btn pink'>
-            <img className="delete small-icon" src="trash_icon.png" alt="delete"/>
+          <img className="delete small-icon" src="trash_icon.png" alt="delete"/>
             Delete Account
           </button>
           <input 
