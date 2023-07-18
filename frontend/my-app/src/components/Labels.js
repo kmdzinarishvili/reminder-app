@@ -2,7 +2,7 @@
 import {useState,useEffect} from 'react';
 
 export default function Labels ({initLabels, setLabels}) {
-  const [arr, setArr] = useState(initLabels);
+  const [arr, setArr] = useState(initLabels||[]);
   useEffect(()=>{
     const localLabels = arr.map(a => a.value)
     console.log(localLabels);
