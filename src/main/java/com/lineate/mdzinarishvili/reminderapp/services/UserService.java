@@ -1,18 +1,15 @@
 package com.lineate.mdzinarishvili.reminderapp.services;
 
 import com.lineate.mdzinarishvili.reminderapp.dao.UserDao;
-import com.lineate.mdzinarishvili.reminderapp.dao.UserDao;
 import com.lineate.mdzinarishvili.reminderapp.dto.DeleteUserRequest;
 import com.lineate.mdzinarishvili.reminderapp.dto.UserRequest;
 import com.lineate.mdzinarishvili.reminderapp.dto.UserResponse;
-import com.lineate.mdzinarishvili.reminderapp.dto.UsersRequest;
-import com.lineate.mdzinarishvili.reminderapp.enums.UsersSortType;
+import com.lineate.mdzinarishvili.reminderapp.dto.UsersResponse;
 import com.lineate.mdzinarishvili.reminderapp.exceptions.NotFoundException;
 import com.lineate.mdzinarishvili.reminderapp.models.User;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,13 +24,13 @@ public class UserService {
     this.userDao = userDao;
   }
 
-  public List<User> getUsers(UsersRequest usersRequest) {
+  public List<UsersResponse> getUsers(String sortType) {
     User user =
         (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     String username = user.getName();
     log.info(
         "Get users request made by: {}", username);
-    return userDao.selectUsers(usersRequest.getUsersSortType());
+    return userDao.selectUsers(sortType).stream().map(UsersResponse::new).collect(Collectors.toList());
   }
 
   public User addNewUser(User user) {
@@ -121,5 +118,17 @@ public class UserService {
         "user service get deleting logged in user data for: {}",
         user.getName());
     deleteUser(user.getId());
+  }
+
+  public List<UsersResponse> getUsersOrderByRegistration() {
+    return getUsers("REGISTRATION_DATE");
+  }
+  public List<UsersResponse> getUsersOrderByUsername() {
+    return getUsers("LOGIN");
+  }
+
+  public List<UsersResponse> getUsersOrderByLastActivity() {
+    return getUsers("LAST_ACTIVITY");
+
   }
 }

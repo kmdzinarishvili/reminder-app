@@ -45,6 +45,7 @@ public class UserDaoImpl implements UserDao {
         " activity_date, timezone_offset_hours, days_before_reminder_delete, " +
         " role_name as role from users u" +
         " join roles r on u.role_id = r.role_id" +
+        " where role_name = 'USER' " +
         " order by " +
         " CASE WHEN :sortType = 'LOGIN' THEN username END, " +
         " CASE WHEN :sortType = 'REGISTRATION_DATE' THEN registration_date END," +
