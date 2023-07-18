@@ -3,7 +3,6 @@ package com.lineate.mdzinarishvili.reminderapp.dto;
 import com.lineate.mdzinarishvili.reminderapp.enums.CategoryType;
 import com.lineate.mdzinarishvili.reminderapp.enums.RecurrenceType;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Collections;
 import java.util.List;
