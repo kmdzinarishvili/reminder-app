@@ -3,6 +3,7 @@ package com.lineate.mdzinarishvili.reminderapp.services;
 import com.lineate.mdzinarishvili.reminderapp.dao.UserDao;
 import com.lineate.mdzinarishvili.reminderapp.dao.UserDao;
 import com.lineate.mdzinarishvili.reminderapp.dto.DeleteUserRequest;
+import com.lineate.mdzinarishvili.reminderapp.dto.UserResponse;
 import com.lineate.mdzinarishvili.reminderapp.dto.UsersRequest;
 import com.lineate.mdzinarishvili.reminderapp.enums.UsersSortType;
 import com.lineate.mdzinarishvili.reminderapp.exceptions.NotFoundException;
@@ -101,11 +102,19 @@ public class UserService {
         });
   }
 
-  public User getLoggedInUserData() {
+  public UserResponse getLoggedInUserData() {
     User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     log.info(
         "user service get getting logged in user data for: {}",
         user.getUsername());
-    return getUser(user.getId());
+    return new UserResponse(getUser(user.getId()));
+  }
+
+  public void deleteLoggedInUser() {
+    User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    log.info(
+        "user service get deleting logged in user data for: {}",
+        user.getUsername());
+    deleteUser(user.getId());
   }
 }
