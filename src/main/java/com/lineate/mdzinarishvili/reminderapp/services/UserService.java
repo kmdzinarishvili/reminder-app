@@ -5,6 +5,7 @@ import com.lineate.mdzinarishvili.reminderapp.dto.DeleteUserRequest;
 import com.lineate.mdzinarishvili.reminderapp.dto.UserRequest;
 import com.lineate.mdzinarishvili.reminderapp.dto.UserResponse;
 import com.lineate.mdzinarishvili.reminderapp.dto.UsersResponse;
+import com.lineate.mdzinarishvili.reminderapp.exceptions.InvalidInputException;
 import com.lineate.mdzinarishvili.reminderapp.exceptions.NotFoundException;
 import com.lineate.mdzinarishvili.reminderapp.models.User;
 import java.util.stream.Collectors;
@@ -45,6 +46,11 @@ public class UserService {
     System.out.println("user from security context"+user);
     log.info("User: {} made update request with data {}", username,
         userRequest);
+    if(userDao.selectUserByUsername(userRequest.getUsername()).isPresent()){
+      log.error("User: {} made update for username that is already in use with data {}", username,
+          userRequest.getUsername());
+      throw new InvalidInputException("Username is already in use");
+    };
     user.setName(userRequest.getUsername());
     user.setTimezoneOffsetHours(userRequest.getTimezoneOffsetHours());
     user.setDaysBeforeReminderDelete(userRequest.getDaysBeforeReminderDelete());

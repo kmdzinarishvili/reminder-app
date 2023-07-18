@@ -9,6 +9,7 @@ import com.lineate.mdzinarishvili.reminderapp.models.User;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.*;
 
 import java.util.Date;
@@ -27,8 +28,7 @@ public class ReminderResponse {
   private RecurrenceType recurrence;
   private int priority;
   private CategoryType category;
-  private List<Label> labels;
-  private String username;
+  private List<String> labels;
 
   public ReminderResponse(Reminder reminder) {
     this.id = reminder.getId();
@@ -38,7 +38,6 @@ public class ReminderResponse {
     this.recurrence = reminder.getRecurrence();
     this.priority = reminder.getPriority();
     this.category = reminder.getCategory();
-    this.labels = reminder.getLabels();
-    this.username = reminder.getUser().getName();
+    this.labels = reminder.getLabels().stream().map(Label::getName).collect(Collectors.toList());
   }
 }

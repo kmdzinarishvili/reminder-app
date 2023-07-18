@@ -6,6 +6,7 @@ import com.lineate.mdzinarishvili.reminderapp.dto.GetRemindersRequest;
 import com.lineate.mdzinarishvili.reminderapp.dto.ReminderCompletedRequest;
 import com.lineate.mdzinarishvili.reminderapp.dto.ReminderRequest;
 import com.lineate.mdzinarishvili.reminderapp.dto.ReminderResponse;
+import com.lineate.mdzinarishvili.reminderapp.dto.UsersResponse;
 import com.lineate.mdzinarishvili.reminderapp.enums.TimePeriod;
 import com.lineate.mdzinarishvili.reminderapp.exceptions.InvalidInputException;
 import com.lineate.mdzinarishvili.reminderapp.exceptions.NotFoundException;
@@ -19,6 +20,7 @@ import java.time.ZoneOffset;
 import java.time.chrono.ChronoLocalDate;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -194,7 +196,7 @@ public class ReminderService {
     return finalDate;
   }
 
-  public List<Reminder> getOldReminders() {
+  public List<ReminderResponse> getOldReminders() {
     User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     log.info("reminder service get old reminders function called by user with username: {}",
         user.getName());
@@ -241,7 +243,8 @@ public class ReminderService {
           break;
       }
     });
-    return oldReminders;
+    return oldReminders.stream().map(ReminderResponse::new).collect(
+        Collectors.toList());
   }
   private boolean checkUpcomingNeverReminder(Reminder reminder, LocalDateTime date ){
     return reminder.getDate().toLocalDate().equals(date.toLocalDate())&&
@@ -346,21 +349,23 @@ public class ReminderService {
     List<Reminder> reminders = getReminders();
     return getRemindersDay(LocalDateTime.now(), reminders);
   }
-  public List<Reminder> getRemindersTodayByCreation() {
+  public List<ReminderResponse> getRemindersTodayByCreation() {
     User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     log.info(
         "reminder service get reminders function called for today by user with username: {}",
         user.getName());
     List<Reminder> reminders = getRemindersOrderByCreation();
-    return getRemindersDay(LocalDateTime.now(),reminders);
+    return getRemindersDay(LocalDateTime.now(),reminders).stream().map(ReminderResponse::new).collect(
+        Collectors.toList());
   }
-  public List<Reminder> getRemindersTodayByPriority() {
+  public List<ReminderResponse> getRemindersTodayByPriority() {
     User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     log.info(
         "reminder service get reminders function called for today by user with username: {}",
         user.getName());
     List<Reminder> reminders = getRemindersOrderByPriority();
-    return getRemindersDay(LocalDateTime.now(),reminders);
+    return getRemindersDay(LocalDateTime.now(),reminders).stream().map(ReminderResponse::new).collect(
+        Collectors.toList());
   }
   public List<Reminder> getRemindersTomorrow() {
     User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -425,9 +430,9 @@ public class ReminderService {
       reminder.setAcceptanceStatus(false);
     }
     List<Label> labels = new ArrayList<>();
-    reminderRequest.getLabels().forEach(label -> {
-      labels.add(reminderDao.getLabelByName(label));
-    });
+      reminderRequest.getLabels().forEach(label -> {
+        labels.add(reminderDao.getLabelByName(label));
+      });
     reminder.setLabels(labels);
     ReminderResponse reminderResponse = new ReminderResponse(reminderDao.insertReminder(reminder));
     log.info(
@@ -495,13 +500,13 @@ public class ReminderService {
   }
 
 
-  public Reminder getReminder(Long id) {
+  public ReminderResponse getReminder(Long id) {
     User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     log.info(
         "reminder service get reminder by id ({}) by user: {}",
         id, user.getName());
     try{
-      return groupReminders(reminderDao.selectReminderById(id)).get(0);
+      return new ReminderResponse(groupReminders(reminderDao.selectReminderById(id)).get(0));
     }catch (Exception e) {
       log.error(
           "reminder service get reminder FAILED by user: {} for reminder with id {} because reminder id not found",
@@ -510,25 +515,27 @@ public class ReminderService {
     }
   }
 
-  public List<Reminder> getRemindersTomorrowByCreation() {
+  public List<ReminderResponse> getRemindersTomorrowByCreation() {
     User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     log.info(
         "reminder service get reminders function called for today by user with username: {}",
         user.getName());
     List<Reminder> reminders = getRemindersOrderByCreation();
-    return getRemindersDay(LocalDateTime.now().toLocalDate().atStartOfDay().plusDays(1),reminders);
+    return getRemindersDay(LocalDateTime.now().toLocalDate().atStartOfDay().plusDays(1),reminders).stream().map(ReminderResponse::new).collect(
+        Collectors.toList());
   }
 
-  public List<Reminder> getRemindersTomorrowByPriority() {
+  public List<ReminderResponse> getRemindersTomorrowByPriority() {
     User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     log.info(
         "reminder service get reminders function called for today by user with username: {}",
         user.getName());
     List<Reminder> reminders = getRemindersOrderByPriority();
-    return getRemindersDay(LocalDateTime.now().toLocalDate().atStartOfDay().plusDays(1),reminders);
+    return getRemindersDay(LocalDateTime.now().toLocalDate().atStartOfDay().plusDays(1),reminders).stream().map(ReminderResponse::new).collect(
+        Collectors.toList());
   }
 
-  public List<Reminder> getRemindersWeekByCreation() {
+  public List<ReminderResponse> getRemindersWeekByCreation() {
     User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     log.info(
         "reminder service get reminders function called for this week order by creation by user with username: {}",
@@ -536,9 +543,10 @@ public class ReminderService {
     LocalDateTime today = LocalDateTime.now();
     int lengthOfWeek = 7;
     List<Reminder> reminders = getRemindersOrderByCreation();
-    return getRemindersPeriod(today, lengthOfWeek, reminders );
+    return getRemindersPeriod(today, lengthOfWeek, reminders ).stream().map(ReminderResponse::new).collect(
+        Collectors.toList());
   }
-  public List<Reminder> getRemindersWeekByPriority() {
+  public List<ReminderResponse> getRemindersWeekByPriority() {
     User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     log.info(
         "reminder service get reminders function called for this week order by prioirty by user with username: {}",
@@ -546,7 +554,8 @@ public class ReminderService {
     LocalDateTime today = LocalDateTime.now();
     int lengthOfWeek = 7;
     List<Reminder> reminders = getRemindersOrderByPriority();
-    return getRemindersPeriod(today, lengthOfWeek, reminders);
+    return getRemindersPeriod(today, lengthOfWeek, reminders).stream().map(ReminderResponse::new).collect(
+        Collectors.toList());
   }
 }
 

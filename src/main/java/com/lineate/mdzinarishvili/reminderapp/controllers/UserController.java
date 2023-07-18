@@ -23,7 +23,7 @@ public class UserController {
 
 
   @PostMapping("/update")
-  public UserResponse updateLoggedInUser(@RequestBody UserRequest user) { // maybe add user dto
+  public UserResponse updateLoggedInUser(@RequestBody UserRequest user) {
     return userService.updateUser(user);
   }
 

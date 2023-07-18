@@ -29,28 +29,28 @@ public class ReminderController {
   }
 
   @GetMapping("/today/creation")
-  public List<Reminder> getTodayRemindersOrderByCreation() {
+  public List<ReminderResponse> getTodayRemindersOrderByCreation() {
     return reminderService.getRemindersTodayByCreation();
   }
   @GetMapping("/today/priority")
-  public List<Reminder> getTodayRemindersOrderByPriority() {
+  public List<ReminderResponse> getTodayRemindersOrderByPriority() {
     return reminderService.getRemindersTodayByPriority();
   }
   @GetMapping("/tomorrow/creation")
-  public List<Reminder> getTomorrowRemindersOrderByCreation() {
+  public List<ReminderResponse> getTomorrowRemindersOrderByCreation() {
     return reminderService.getRemindersTomorrowByCreation();
   }
   @GetMapping("/tomorrow/priority")
-  public List<Reminder> getTomorrowRemindersOrderByPriority() {
+  public List<ReminderResponse> getTomorrowRemindersOrderByPriority() {
     return reminderService.getRemindersTomorrowByPriority();
   }
 
   @GetMapping("/week/creation")
-  public List<Reminder> getWeekRemindersOrderByCreation() {
+  public List<ReminderResponse> getWeekRemindersOrderByCreation() {
     return reminderService.getRemindersWeekByCreation();
   }
   @GetMapping("/week/priority")
-  public List<Reminder> getWeekRemindersOrderByPriority() {
+  public List<ReminderResponse> getWeekRemindersOrderByPriority() {
     return reminderService.getRemindersWeekByPriority();
   }
   @GetMapping("/tomorrow")
@@ -63,17 +63,18 @@ public class ReminderController {
   }
 
   @GetMapping("/old")
-  public List<Reminder> listOldReminders() {
+  public List<ReminderResponse> listOldReminders() {
     return reminderService.getOldReminders();
   }
 
   @GetMapping("/{id}")
-  public Reminder getReminderById(@PathVariable("id") Long id) {
+  public ReminderResponse getReminderById(@PathVariable("id") Long id) {
     return reminderService.getReminder(id);
   }
 
   @PostMapping
   public ReminderResponse addReminder(@RequestBody ReminderRequest reminderRequest) {
+    System.out.println(reminderRequest);
     return reminderService.addNewReminder(reminderRequest);
   }
 
@@ -99,7 +100,7 @@ public class ReminderController {
   }
 
   @GetMapping("/overdue")
-  public List<Reminder> updateReminder() {
+  public List<Reminder> getOverdueReminder() {
     return reminderService.getOverdueReminders();
   }
 
