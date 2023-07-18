@@ -532,7 +532,7 @@ public class ReminderService {
         user.getUsername());
     LocalDateTime today = LocalDateTime.now();
     int lengthOfWeek = 7;
-    List<Reminder> reminders = getRemindersWeekByPriority();
+    List<Reminder> reminders = getRemindersOrderByPriority();
     return getRemindersPeriod(today, lengthOfWeek, reminders);
   }
 }

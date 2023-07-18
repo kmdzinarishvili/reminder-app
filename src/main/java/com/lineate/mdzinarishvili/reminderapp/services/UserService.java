@@ -100,4 +100,12 @@ public class UserService {
           return new NotFoundException(String.format("User with id %s not found", id));
         });
   }
+
+  public User getLoggedInUserData() {
+    User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    log.info(
+        "user service get getting logged in user data for: {}",
+        user.getUsername());
+    return getUser(user.getId());
+  }
 }

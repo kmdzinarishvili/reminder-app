@@ -21,6 +21,12 @@ public class UserController {
     return userService.getUser(id);
   }
 
+  @GetMapping("/")
+  public User getLoggedInUserData() {
+    return userService.getLoggedInUserData();
+  }
+
+
   @PostMapping
   public User addUser(@RequestBody User user) {
     return userService.addNewUser(user);

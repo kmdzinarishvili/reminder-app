@@ -1,8 +1,11 @@
 
 import {post} from '../helper/post';
 import useAuth from '../hooks/useAuth';
+import axios  from 'axios';
 
+const {REACT_APP_API_BASE_URL:BASE_URL} = process.env;
 const MARK_AS_COMPLETED = '/reminders/completed';
+const REMINDERS = '/reminders/'
 const EDIT = '';
 
 const Reminder = ({reminder, setFetchToggle}) =>{
@@ -21,8 +24,19 @@ const Reminder = ({reminder, setFetchToggle}) =>{
     const redirectToEdit = ()=>{
         alert("redirecting to edit")
     }
-    const deleteReminder = ()=>{
-        alert("delete")
+    const deleteReminder = async ()=>{
+        const response = await axios.delete(BASE_URL+REMINDERS+id,
+            {
+                headers: { 
+                    'Content-Type': 'application/json', 
+                    'Authorization': "Bearer "+ auth.accessToken,
+            }, 
+            withCredentials:true
+            } 
+        );
+        if (response.status===200){
+            setFetchToggle(prev=>!prev);
+        }
     }
 
     return <div className="row">
