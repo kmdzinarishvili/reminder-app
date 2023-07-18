@@ -4,7 +4,7 @@ import useAuth from "../hooks/useAuth";
 import axios from "axios";
 
 const Admin = () => {
-    const {auth, setAuth} = useAuth();
+    const {auth} = useAuth();
     const logout = async () => {
         const response = await axios.get('http://localhost:8080/api/v1/admin/login',
             {

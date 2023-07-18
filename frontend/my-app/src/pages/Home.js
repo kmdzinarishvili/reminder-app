@@ -7,6 +7,9 @@ import Reminder from "../components/Reminder";
 import { query } from "../helper/query";
  
 const {REACT_APP_API_BASE_URL: BASE_URL} = process.env;
+
+const USER = '/user'
+
 const OVERDUE = '/reminders/overdue';
 const OLD = '/reminders/old';
 const TODAY = '/reminders/today';
@@ -115,9 +118,23 @@ const Home = () => {
     useEffect(()=>{
        getOverdueReminders();
     },[fetchToggle])
+
+    
+    const getUserData = async () => {
+        const response = await axios.get(BASE_URL+USER,
+        {
+            headers: { 
+                'Content-Type': 'application/json', 
+                'Authorization': "Bearer "+ auth.accessToken,
+            }, 
+        }
+        );
+    }
+
+
     useEffect(()=>{
-        console.log(orderBy)
-    },[orderBy])
+        getUserData();
+    },[])
 
     return (
         <section className="page">
@@ -126,7 +143,7 @@ const Home = () => {
             <button onClick={addReminder}>Add Reminder</button>
                 <h4>Overdue: </h4>
                 <div>
-                    {overdueReminders.map((reminder)=>
+                    {overdueReminders?.map((reminder)=>
                         <Reminder key={reminder.id} reminder={reminder} setFetchToggle={setFetchToggle}/>
                     )}
                 </div>

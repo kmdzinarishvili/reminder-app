@@ -1,66 +1,17 @@
 import React, { useEffect } from 'react';
 import { useState } from 'react';
 import useAuth from '../hooks/useAuth';
-const Labels = ({setLabels}) => {
-    const inputArr = [
-    {
-      type: "text",
-      id: 1,
-      value: ""
-    }
-  ];
+import { post } from '../helper/post';
+import { useNavigate } from 'react-router-dom';
 
-  const [arr, setArr] = useState(inputArr);
-  useEffect(()=>{
-    // setLabels()
-  },[])
-  const addInput = () => {
-    setArr(s => {
-      return [
-        ...s,
-        {
-          type: "text",
-          value: ""
-        }
-      ];
-    });
-  };
-  const removeInput = () => {
-    setArr(s => {
-        return arr.slice(0, -1);;
-    })
-  };
+import Labels from '../components/Labels';
+import axios from 'axios';
+const {REACT_APP_API_BASE_URL: BASE_URL} = process.env;
 
-  const handleChange = e => {
-    e.preventDefault();
 
-    const index = e.target.id;
-    setArr(s => {
-      const newArr = s.slice();
-      newArr[index].value = e.target.value;
-      return newArr;
-    });
-  };
+const AddReminder = ({setFetchToggle}) =>{
+    const navigate = useNavigate();
 
-  return (
-    <div className='box'>
-      {arr.map((item, i) => {
-        return (
-          <input
-            onChange={handleChange}
-            value={item.value}
-            id={i}
-            type={item.type}
-            size="40"
-          />
-        );
-      })}
-      <button style={{width:'28%'}} onClick={addInput}>+</button>
-      {arr.length>1&&<button style={{width:'28%'}} onClick={removeInput}>-</button>}
-    </div>
-  );
-}
-const AddReminder = () =>{
     const [title, setTitle] = useState('');
     const [recurrence, setRecurrence] = useState('NEVER');
     const [date, setDate] = useState();
@@ -71,12 +22,31 @@ const AddReminder = () =>{
     const [toSomeone, setToSomeone] = useState('');
     const [labels, setLabels] = useState();
     const [attachment, setAttachment] = useState();
-    const [labelInputs, setLabelInputs] = useState();
-    // private String userEmail;
-    // private String userUsername;
-    const { auth } = useAuth;
-    const handleSubmit= (e) => {
-        // text.includes("world");
+    const { auth } = useAuth();
+    
+    const handleSubmit= async (e) => {
+      e.preventDefault();
+      console.log(title, recurrence, date, time, priority, category, labels)
+      // const response = await post({urlExtension: null,
+      //     body:{title,recurrence,date,time,priority,category,labels},
+      //     accessToken:auth.accessToken
+      // });
+      const response = await axios.post(BASE_URL+"/reminders",
+        {title,recurrence,date,time,priority,category,labels},
+        {
+            headers: { 
+                'Content-Type': 'application/json', 
+                'Authorization': "Bearer "+ auth.accessToken,
+        }, 
+        withCredentials:true
+        } 
+      );
+      if (response.status===200){
+        alert('successfully added')
+        navigate("/")
+        // setFetchToggle(prev=>!prev);
+      }
+      // text.includes("world");
         // let formData = new FormData();
         // formData.append('file', this.file);
         // console.log('>> formData >> ', formData);
@@ -92,7 +62,6 @@ const AddReminder = () =>{
     //   .catch(function () {
     //     console.log('FAILURE!!');
     //   });
-      e.preventDefault();
     }
   
     return (
@@ -180,7 +149,7 @@ const AddReminder = () =>{
         }
         <br/>
         <label>Labels:</label>
-        <Labels/>
+        <Labels setLabels={setLabels}/>
         <input 
           type='submit' 
           value='Add Reminder' 
@@ -190,21 +159,3 @@ const AddReminder = () =>{
   }
 
 export default AddReminder;
-
-//   import { useNavigate } from "react-router-dom";
-// import { useState } from "react";
-// import useAuth from "../hooks/useAuth";
-
-// const AddReminder = () => {
-//     const { auth } = useAuth;
-//     const navigate = useNavigate();
-//     const addReminder = () =>{
-//         navigate('/add');
-//     }
-//     return (
-//         <section className="page">
-//         </section>
-//     )
-// }
-
-// export default Home
