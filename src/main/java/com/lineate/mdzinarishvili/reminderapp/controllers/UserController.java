@@ -2,7 +2,6 @@ package com.lineate.mdzinarishvili.reminderapp.controllers;
 
 import com.lineate.mdzinarishvili.reminderapp.dto.UserRequest;
 import com.lineate.mdzinarishvili.reminderapp.dto.UserResponse;
-import com.lineate.mdzinarishvili.reminderapp.models.User;
 import com.lineate.mdzinarishvili.reminderapp.services.UserService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -29,9 +28,9 @@ public class UserController {
   }
 
 
-//  @DeleteMapping("/")
-//  public User deleteLoggedInUser() {
-//    return userService.getLoggedInUserData();
-//  }
+  @DeleteMapping
+  public void deleteLoggedInUser() {
+    userService.deleteLoggedInUser();
+  }
 
 }

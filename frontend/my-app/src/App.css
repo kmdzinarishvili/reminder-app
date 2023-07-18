@@ -139,6 +139,11 @@ input{
   justify-content: center;
   align-items: center;
 }
+
 .line{
   margin-top: 10px;
+}
+.read-only{
+    outline: inherit;
+    background-color: aliceblue;
 }

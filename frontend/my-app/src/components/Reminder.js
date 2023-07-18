@@ -26,6 +26,7 @@ const Reminder = ({reminder, setFetchToggle}) =>{
         navigate('/edit', {state:{reminder}})
     }
     const deleteReminder = async ()=>{
+
         const response = await axios.delete(BASE_URL+REMINDERS+id,
             {
                 headers: { 
@@ -41,13 +42,13 @@ const Reminder = ({reminder, setFetchToggle}) =>{
     }
 
     return <div className="row">
-        <div onClick={markAsCompleted}><img className="check icon" src="check_icon.png" alt="edit"/></div>
+        <div onClick={markAsCompleted}><img className="check icon" src="check_icon.png" alt="complete"/></div>
         <p>{title}</p>
         <p>{recurrence}</p>
         <p> Date: {formattedDate} </p>
         <p> Priority: {priority}</p>
         <img onClick={redirectToEdit}className="edit icon" src="edit_icon.png" alt="edit"/>
-        <img onClick={deleteReminder}className="delete icon" src="trash_icon.png" alt="edit"/>
+        <img onClick={deleteReminder}className="delete icon" src="trash_icon.png" alt="delete"/>
     </div>
 }
 export default Reminder;

@@ -4,13 +4,10 @@ import useAuth from '../hooks/useAuth';
 import { post } from '../helper/post';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { timeZones } from '../consts/timeZones';
-import Labels from '../components/Labels';
 import axios from 'axios';
-import FileUploader from '../components/FileUploader';
 const {REACT_APP_API_BASE_URL: BASE_URL} = process.env;
-const padWithLeadingZeros = (num) =>{
-    return String(num).padStart(2, '0');
-}
+const USER = "/user"
+
 
 const EditProfile = () =>{
     const { state } = useLocation();
@@ -21,7 +18,7 @@ const EditProfile = () =>{
     const [timeZone, setTimeZone] = useState(userData.timezoneOffsetHours);
     const {email} = userData;
     const [numDays, setNumDays] = useState(userData.daysBeforeReminderDelete);
-    const { auth } = useAuth();
+    const { auth, setAuth } = useAuth();
     const [errMsg, setErrMsg]=useState();
 
     const handleSubmit= async (e) => {
@@ -44,6 +41,19 @@ const EditProfile = () =>{
 
     const deleteAccount = async(e)=>{
       e.preventDefault();
+      const response = await axios.delete(BASE_URL+USER,
+          {
+              headers: { 
+                  'Content-Type': 'application/json', 
+                  'Authorization': "Bearer "+ auth.accessToken,
+          }, 
+          withCredentials:true
+          } 
+      );
+      if (response.status===200){
+          setAuth({});
+          navigate('/register');
+      }
     }
   
     return (
@@ -51,7 +61,7 @@ const EditProfile = () =>{
       <form className="container" onSubmit={e => { handleSubmit(e) }}>
         <h1 className="title">Account Details</h1>
         <img  className="large-icon" src="user_icon.png" alt="profile"/>
-        <label className='label'>Username:</label>
+        <label className='label'>Username</label>
         <input 
           className='edit input editInput'
           name='username' 
@@ -60,16 +70,17 @@ const EditProfile = () =>{
           onChange={e => setUsername(e.target.value)}
         />
         <br/>
-        <label className='label'>Email:</label>
+        <label className='label'>Email</label>
         <input 
-          className='edit input editInput'
+          className='edit input editInput read-only'
           name='username' 
           type='text'
           value={email}
+          onChange={(e)=>{e.preventDefault()}}
           readOnly
         />
         <br />
-        <label className='label'>Time Zone (UTC offset):</label>
+        <label className='label'>Time Zone (UTC offset)</label>
         <select  className='input select'
             id="offset"
             name="offset"
@@ -80,7 +91,7 @@ const EditProfile = () =>{
             })}
         </select>
         <br />
-        <label className='label'>Days to show old reminders:</label>
+        <label className='label'>Days to save old reminders</label>
         <input
           className='edit input editInput'
           name='numDays' 
@@ -94,8 +105,8 @@ const EditProfile = () =>{
         {errMsg}
         
         <div className='button-container'>
-          <button className='btn'>
-          <img onClick={deleteAccount}className="delete small-icon" src="trash_icon.png" alt="delete"/>
+          <button onClick={deleteAccount} className='btn'>
+            <img className="delete small-icon" src="trash_icon.png" alt="delete"/>
             Delete Account
           </button>
           <input 
