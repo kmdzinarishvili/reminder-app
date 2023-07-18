@@ -11,7 +11,7 @@ const Login = () => {
 
     const navigate = useNavigate();
 
-    const [username, setUsername] = useState();
+    const [email, setEmail] = useState();
     const [password, setPassword] = useState();
     const [errMsg, setErrMsg] = useState();
 
@@ -22,7 +22,7 @@ const Login = () => {
 
         try {
             const response = await axios.post(BASE_URL+LOGIN_URL,
-                JSON.stringify({ username, password }),
+                JSON.stringify({ email, password }),
                 {
                     headers: { 'Content-Type': 'application/json' },
                 }
@@ -42,7 +42,7 @@ const Login = () => {
             if (!err?.response) {
                 setErrMsg('No Server Response');
             } else if (err.response?.status === 400||err.response?.status === 401|| err.response?.status ===403) {
-                setErrMsg('Invalid Username or Password');
+                setErrMsg('Invalid Email or Password');
             } else {
                 setErrMsg('Login Failed');
             }
@@ -50,38 +50,42 @@ const Login = () => {
     }
 
     return (
-
-        <section>
-            <h1>Login</h1>
-            <form onSubmit={handleSubmit} className='box'>
-                <label htmlFor="username">Username:</label>
-                <input
-                    type="text"
-                    id="username"
-                    autoComplete="off"
-                    onChange={(e) => setUsername(e.target.value)}
-                    value={username}
-                    required
-                />
-                <label htmlFor="password">Password:</label>
-                <input
-                    type="password"
-                    id="password"
-                    onChange={(e) => setPassword(e.target.value)}
-                    value={password}
-                    required
-                />
-                <p>{errMsg}</p>
-                <button>Sign In</button>
-            </form>
-            <p>
-                Need an Account?<br />
-                <span className="line">
-                    <Link to="/register">Sign Up</Link>
-                </span>
-            </p>
-        </section>
-
+        <div className='parent'>
+            <section className='container'>
+                <h1 className="title">Login</h1>
+                <form onSubmit={handleSubmit} className='container'>
+                    <label className='label' htmlFor="email">Email</label>
+                    <input
+                        className="input"
+                        type="text"
+                        id="email"
+                        autoComplete="off"
+                        onChange={(e) => setEmail(e.target.value)}
+                        value={email}
+                        required
+                    />
+                    <label className='label'  htmlFor="password">Password</label>
+                    <input
+                        className="input"
+                        type="password"
+                        id="password"
+                        onChange={(e) => setPassword(e.target.value)}
+                        value={password}
+                        required
+                    />
+                    <p>{errMsg}</p>
+                    <button className='login-btn'>Login</button>
+                </form>
+                <p>
+                    Need an Account?
+                    <br />
+                    <br />
+                    <span className="line">
+                        <Link to="/register">Sign Up</Link>
+                    </span>
+                </p>
+            </section>
+        </div>
     )
 }
 

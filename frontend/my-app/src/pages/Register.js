@@ -46,46 +46,51 @@ const Register = () => {
     }
 
     return (
-
-        <section>
-            <h1>Register</h1>
-            <form onSubmit={handleSubmit} className='box'>
-                <label htmlFor="username">Username:</label>
-                <input
-                    type="text"
-                    id="username"
-                    autoComplete="off"
-                    onChange={(e) => setUsername(e.target.value)}
-                    value={username}
-                    required
-                />
-                <label htmlFor="email">Email:</label>
-                <input
-                    type="email"
-                    id="email"
-                    onChange={(e) => setEmail(e.target.value)}
-                    value={email}
-                    required
-                />
-                <label htmlFor="password">Password:</label>
-                <input
-                    type="password"
-                    id="password"
-                    onChange={(e) => setPassword(e.target.value)}
-                    value={password}
-                    required
-                />
-                <p>{errMsg}</p>
-                <button>Register</button>
-            </form>
-            <p>
-                Have an Account?<br />
-                <span className="line">
-                    <Link to="/login">Login</Link>
-                </span>
-            </p>
-        </section>
-
+        <div className='parent'>
+            <section className='container'>
+                <h1 className='title'>Register</h1>
+                <form onSubmit={handleSubmit} className='container'>
+                    <label className='label' htmlFor="username">Username</label>
+                    <input
+                        className='input'
+                        type="text"
+                        id="username"
+                        autoComplete="off"
+                        onChange={(e) => setUsername(e.target.value)}
+                        value={username}
+                        required
+                    />
+                    <label className='label' htmlFor="email">Email</label>
+                    <input
+                        className='input'
+                        type="email"
+                        id="email"
+                        onChange={(e) => setEmail(e.target.value)}
+                        value={email}
+                        required
+                    />
+                    <label className='label' htmlFor="password">Password</label>
+                    <input
+                        className='input'
+                        type="password"
+                        id="password"
+                        onChange={(e) => setPassword(e.target.value)}
+                        value={password}
+                        required
+                    />
+                    <p>{errMsg}</p>
+                    <button className='login-btn'>Register</button>
+                </form>
+                <p>
+                    Have an Account?
+                    <br />
+                    <br />
+                    <span className="line">
+                        <Link to="/login">Login</Link>
+                    </span>
+                </p>
+            </section>
+        </div>
     )
 }
 

@@ -13,69 +13,64 @@ const padWithLeadingZeros = (num) =>{
 }
 
 const EditProfile = () =>{
-    
-// Timezone (default UTC).
-// Username.
-// Email (view only, not editable).
-// Number of days to keep completed reminders.
     const { state } = useLocation();
     const {userData} = state;
 
     const navigate = useNavigate();
     const [username, setUsername] = useState(userData.username);
-    const [timeZone, setTimeZone] = useState("+0:00");
+    const [timeZone, setTimeZone] = useState(userData.timezoneOffsetHours);
     const {email} = userData;
     const [numDays, setNumDays] = useState(userData.daysBeforeReminderDelete);
     const { auth } = useAuth();
     const [errMsg, setErrMsg]=useState();
 
-    useEffect(()=>{
-        console.log(userData.timeZoneOffset);
-        console.log(timeZone);
-    },[timeZone])
     const handleSubmit= async (e) => {
       e.preventDefault();
-    //   console.log(title, recurrence, date, time, priority, category, labels)
-    //   const data = {title,recurrence,date,time,priority,category,labels};
-    //   await post({urlExtension:`/reminders/${reminder.id}/update`,
-    //       body:data,
-    //       accessToken:auth.accessToken
-    //   }).then(res => {
-    //     navigate("/")
-    //   }).catch(err =>{
-    //     if(err.response.data){
-    //       setErrMsg("User with this identifier not found");
-    //     }else {
-    //       setErrMsg("Please enter all requried fields");
-    //     }
-    //   });
+      const data = {username,timezoneOffsetHours:timeZone,daysBeforeReminderDelete: numDays};
+      await post({urlExtension:`/user/update`,
+          body:data,
+          accessToken:auth.accessToken
+      }).then(res => {
+        navigate("/")
+      }).catch(err =>{
+        if(err.response.data){
+          setErrMsg("User with this identifier not found");
+        }else {
+          setErrMsg("Please enter all requried fields");
+        }
+      });
       
+    }
+
+    const deleteAccount = async(e)=>{
+      e.preventDefault();
     }
   
     return (
-      <form onSubmit={e => { handleSubmit(e) }}>
-        <label>Username:</label>
-        <br />
+      <div className="parent">
+      <form className="container" onSubmit={e => { handleSubmit(e) }}>
+        <h1 className="title">Account Details</h1>
+        <img  className="large-icon" src="user_icon.png" alt="profile"/>
+        <label className='label'>Username:</label>
         <input 
+          className='edit input editInput'
           name='username' 
           type='text'
           value={username}
           onChange={e => setUsername(e.target.value)}
         />
         <br/>
-        <label>Email:</label>
-        <br />
+        <label className='label'>Email:</label>
         <input 
+          className='edit input editInput'
           name='username' 
           type='text'
           value={email}
           readOnly
         />
         <br />
-        <label>Time Zone:</label>
-        <br />
-        <span>UTC: </span> 
-        <select 
+        <label className='label'>Time Zone (UTC offset):</label>
+        <select  className='input select'
             id="offset"
             name="offset"
             value={timeZone}
@@ -83,16 +78,11 @@ const EditProfile = () =>{
             {Object.keys(timeZones).map((key)=>{
                return <option key={key} value={timeZones[key]}>{key}</option>
             })}
-            {timeZone}
-            {/* <option value="NEVER">Never</option>
-            <option value="DAILY">Daily</option>
-            <option value="WEEKLY">Weekly</option>
-            <option value="MONTHLY">Monthly</option> */}
         </select>
         <br />
-        <label>Priority:</label>
-        <br />
+        <label className='label'>Days to show old reminders:</label>
         <input
+          className='edit input editInput'
           name='numDays' 
           type='number'
           min={1}
@@ -102,12 +92,21 @@ const EditProfile = () =>{
         <br/>       
     
         {errMsg}
-        <br/>
-        <input 
-          type='submit' 
-          value='Add Reminder' 
-        />
+        
+        <div className='button-container'>
+          <button className='btn'>
+          <img onClick={deleteAccount}className="delete small-icon" src="trash_icon.png" alt="delete"/>
+            Delete Account
+          </button>
+          <input 
+            className='btn'
+            type='submit' 
+            value='Save Changes' 
+          />
+        </div>
+   
       </form>
+      </div>
     )
   }
 
