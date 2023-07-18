@@ -6,7 +6,6 @@ import { useNavigate } from 'react-router-dom';
 const {REACT_APP_API_BASE_URL:BASE_URL} = process.env;
 const MARK_AS_COMPLETED = '/reminders/completed';
 const REMINDERS = '/reminders/'
-const EDIT = '';
 
 const Reminder = ({reminder, setFetchToggle}) =>{
     const {auth} = useAuth();
@@ -26,7 +25,6 @@ const Reminder = ({reminder, setFetchToggle}) =>{
         navigate('/edit', {state:{reminder}})
     }
     const deleteReminder = async ()=>{
-
         const response = await axios.delete(BASE_URL+REMINDERS+id,
             {
                 headers: { 
@@ -41,8 +39,10 @@ const Reminder = ({reminder, setFetchToggle}) =>{
         }
     }
 
-    return <div className="row">
-        <div onClick={markAsCompleted}><img className="check icon" src="check_icon.png" alt="complete"/></div>
+    return <div className="row reminder">
+        <div onClick={markAsCompleted}>
+            <img className="check icon" src="check_icon.png" alt="complete"/>
+        </div>
         <p>{title}</p>
         <p>{recurrence}</p>
         <p> Date: {formattedDate} </p>

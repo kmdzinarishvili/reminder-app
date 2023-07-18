@@ -34,10 +34,10 @@ const NavBar = ({setWhichFetch, howManyDays}) =>{
         setWhichFetch("WEEK")
     }
     return <div className="row">
-        <button onClick={fetchOld}>Previous {howManyDays} days</button>
-        <button onClick={fetchToday}>Today</button>
-        <button onClick={fetchTomorrow}>Tomorrow</button>
-        <button onClick={fetchThisWeek}>This Week</button>
+        <button className="nav-item" onClick={fetchOld}>Previous {howManyDays} days</button>
+        <button className="nav-item" onClick={fetchToday}>Today</button>
+        <button className="nav-item" onClick={fetchTomorrow}>Tomorrow</button>
+        <button className="nav-item" onClick={fetchThisWeek}>This Week</button>
     </div>
 }
 
@@ -114,7 +114,7 @@ const Home = () => {
         }else{
             fetchOld();
         }
-    },[whichFetch,fetchToggle, orderBy])
+    },[whichFetch,fetchToggle,orderBy])
 
     useEffect(()=>{
        getOverdueReminders();
@@ -145,44 +145,50 @@ const Home = () => {
     return (
         <section className="page">
             <img onClick={editProfile} className="user-icon icon" src="user_icon.png" alt="profile"/>
-            <h1>Home</h1>
-            <div className="flexGrow">
-            <button onClick={addReminder}>Add Reminder</button>
-                <h4>Overdue: </h4>
+            <h1 className="reminders-title">Reminders</h1>
+            <div className="items-container">
+                {overdueReminders.length>0&&<h4>Overdue: </h4>}
                 <div>
                     {overdueReminders?.map((reminder)=>
                         <Reminder key={reminder.id} reminder={reminder} setFetchToggle={setFetchToggle}/>
                     )}
                 </div>
                 <NavBar setWhichFetch={setWhichFetch} howManyDays={userData.daysBeforeReminderDelete}/>
-                {whichFetch!=="OLD"&&
-                   <div className="App">
-                     <h3>Order by:</h3>
-                     <input
-                       type="radio"
-                       name="orderby"
-                       value="PRIORITY"
-                       id="priority"
-                       checked={orderBy === PRIORITY}
-                       onChange={()=>setOrderBy(PRIORITY)}
-                     />
-                     <label htmlFor="regular">Priority</label>
-                     <input
-                       type="radio"
-                       name="orderby"
-                       value="CREATION"
-                       id="creation"
-                       checked={orderBy === CREATION}
-                       onChange={()=>setOrderBy(CREATION)}
-                     />
-                    <label htmlFor="regular">Creation Date</label>
+                <div className="cont">
+                    <button className="add-btn" onClick={addReminder}>
+                        <img className="small-icon" src="plus_icon.png" alt="edit"/>
+                        Add Reminder
+                    </button>
+                    {whichFetch!=="OLD"&&
+                    <div className="order-by">
+                        <p>Order by:</p>
+                        <input
+                        style={{marginTop:20}}
+                        type="radio"
+                        name="orderby"
+                        value="PRIORITY"
+                        id="priority"
+                        checked={orderBy === PRIORITY}
+                        onChange={()=>setOrderBy(PRIORITY)}
+                        />
+                        <label htmlFor="regular">Priority</label>
+                        <input
+                        style={{marginTop:20}}
+                        type="radio"
+                        name="orderby"
+                        value="CREATION"
+                        id="creation"
+                        checked={orderBy === CREATION}
+                        onChange={()=>setOrderBy(CREATION)}
+                        />
+                        <label htmlFor="regular">Creation Date</label>
                     </div>}
+                </div>
                 <div>
                     {data.map((reminder)=>
                         <Reminder key={reminder.id} reminder={reminder} setFetchToggle={setFetchToggle}/>
                     )}
                 </div>
-                <LogoutBtn/>
             </div>
         </section>
     )

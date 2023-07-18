@@ -5,6 +5,7 @@ import { post } from '../helper/post';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { timeZones } from '../consts/timeZones';
 import axios from 'axios';
+import LogoutBtn from '../components/LogoutBtn';
 const {REACT_APP_API_BASE_URL: BASE_URL} = process.env;
 const USER = "/user"
 
@@ -101,11 +102,9 @@ const EditProfile = () =>{
           onChange={e => setNumDays(e.target.value)}
         />
         <br/>       
-    
         {errMsg}
-        
         <div className='button-container'>
-          <button onClick={deleteAccount} className='btn'>
+          <button onClick={deleteAccount} className='btn pink'>
             <img className="delete small-icon" src="trash_icon.png" alt="delete"/>
             Delete Account
           </button>
@@ -115,8 +114,9 @@ const EditProfile = () =>{
             value='Save Changes' 
           />
         </div>
-   
+        <LogoutBtn/>
       </form>
+    
       </div>
     )
   }

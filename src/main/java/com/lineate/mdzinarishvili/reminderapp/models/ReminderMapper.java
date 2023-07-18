@@ -19,6 +19,7 @@ public class ReminderMapper implements RowMapper<Reminder> {
         CategoryType.valueOf(resultSet.getString("category_name")),
         resultSet.getBoolean("acceptance_status"),
         resultSet.getDate("which_reminder_completed")==null? null: resultSet.getDate("which_reminder_completed").toLocalDate(),
+        resultSet.getDate("when_completed")==null? null: resultSet.getTimestamp("when_completed").toInstant(),
         new Label(resultSet.getLong("label_id"),
         resultSet.getString("label_name"))
     );

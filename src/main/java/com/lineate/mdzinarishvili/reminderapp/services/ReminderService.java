@@ -15,6 +15,8 @@ import com.lineate.mdzinarishvili.reminderapp.models.User;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneOffset;
+import java.time.chrono.ChronoLocalDate;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import lombok.extern.slf4j.Slf4j;
@@ -206,26 +208,35 @@ public class ReminderService {
       LocalDateTime reminderDate = reminder.getDate();
       switch (reminder.getRecurrence()) {
         case NEVER:
-          if (checkInRange(reminderDate, daysBeforeDate, today)) {
+          if (reminder.getWhenCompleted()!=null &&checkInRange(LocalDateTime.ofInstant(reminder.getWhenCompleted(), ZoneOffset.UTC), daysBeforeDate, today) ) {
             oldReminders.add(reminder);
           }
           break;
         case DAILY:
-          reminder.setDate(calculateDailyDate(today.minusDays(1), reminderDate));
-          oldReminders.add(reminder);
-          break;
-        case WEEKLY:
-          LocalDateTime weeklyDate = getWeeklyReminderDate(0,daysBefore,daysBeforeDate,reminderDate, false);
-          if (weeklyDate!=null){
-            reminder.setDate(weeklyDate);
+          if( reminder.getWhenCompleted()!=null&& checkInRange(LocalDateTime.ofInstant(reminder.getWhenCompleted(), ZoneOffset.UTC), daysBeforeDate, today)) {
+            reminder.setDate(
+                calculateDailyDate(reminder.getWhichCompleted().atStartOfDay(), reminderDate));
             oldReminders.add(reminder);
           }
           break;
+        case WEEKLY:
+          if( reminder.getWhenCompleted()!=null&& checkInRange(LocalDateTime.ofInstant(reminder.getWhenCompleted(), ZoneOffset.UTC), daysBeforeDate, today)) {
+            LocalDateTime weeklyDate =
+                getWeeklyReminderDate(0, daysBefore, daysBeforeDate, LocalDateTime.of(reminder.getWhichCompleted(), reminderDate.toLocalTime()), false);
+            if (weeklyDate != null) {
+              reminder.setDate(weeklyDate);
+              oldReminders.add(reminder);
+            }
+          }
+          break;
         case MONTHLY:
-          LocalDateTime monthlyDate =  getMonthlyReminderDate(0, daysBefore, daysBeforeDate, reminderDate, false);
-          if (monthlyDate!=null){
-            reminder.setDate(monthlyDate);
-            oldReminders.add(reminder);
+          if( reminder.getWhenCompleted()!=null&& checkInRange(LocalDateTime.ofInstant(reminder.getWhenCompleted(), ZoneOffset.UTC), daysBeforeDate, today)) {
+            LocalDateTime monthlyDate =
+                getMonthlyReminderDate(0, daysBefore, daysBeforeDate, LocalDateTime.of(reminder.getWhichCompleted(), reminder.getDate().toLocalTime()), false);
+            if (monthlyDate != null) {
+              reminder.setDate(monthlyDate);
+              oldReminders.add(reminder);
+            }
           }
           break;
       }

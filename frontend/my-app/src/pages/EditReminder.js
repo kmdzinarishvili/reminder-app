@@ -118,7 +118,6 @@ const EditReminder = () =>{
         <br/>       
       
         <br/>
-        <label>Labels:</label>
         <Labels initLabels={initLabels} setLabels={setLabels}/>
         {/* <FileUploader setAttachment={setAttachment}/> */}
         <br/>

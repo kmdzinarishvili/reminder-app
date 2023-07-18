@@ -48,19 +48,21 @@ const AddReminder = () =>{
     }
   
     return (
-      <form onSubmit={e => { handleSubmit(e) }}>
-        <label>Title:</label>
-        <br />
-        <input 
+      <div className='parent'>
+      <form onSubmit={e => { handleSubmit(e) }} className='container'>
+        <h3 className='title'>Add Reminder</h3>
+        <label className='label' >Title:</label>
+         <input 
+          className='input'  
           name='title' 
           type='text'
           value={title}
           onChange={e => setTitle(e.target.value)}
         />
         <br/>
-        <label>Recurrence:</label>
-        <br />
+        <label className='label'>Recurrence:</label>
         <select 
+            className='input' 
             id="recurrence"
             name="recurrence"
             value={recurrence}
@@ -71,9 +73,9 @@ const AddReminder = () =>{
             <option value="MONTHLY">Monthly</option>
         </select>
         <br />
-        <label>Cateogry:</label>
-        <br />
+        <label className='label'>Cateogry:</label>
         <select 
+            className='input' 
             id="category"
             name="category"
             value={category}
@@ -83,25 +85,28 @@ const AddReminder = () =>{
             <option value="EDUCATION">Education</option>
         </select>
         <br />
-        <label>Date:</label>
-        <br />
-        <input
+        <label className='label'>Date:</label>
+         <input 
+          className='input' 
           name='date' 
           type='date'
           value={date}
           onChange={e => setDate(e.target.value)}
         />
         <br/>
-        <input
+        <label className='label'>Time:</label>
+         <input 
+          className='input' 
           name='time' 
           type='time'
           value={time}
           onChange={e => setTime(e.target.value)}
         />
         <br/>
-        <label>Priority:</label>
+        <label className='label'>Priority:</label>
         <br />
-        <input
+         <input 
+          className='input' 
           name='priority' 
           type='number'
           min={1}
@@ -109,8 +114,8 @@ const AddReminder = () =>{
           onChange={e => setPriority(e.target.value)}
         />
         <br/>
-        <div>
-        <input 
+        <div className='label'>
+         <input 
             type="checkbox"
             id="show"
             name="show" 
@@ -121,9 +126,10 @@ const AddReminder = () =>{
             }} 
 
         />
-        <label>Assign To Someone Else</label>
+        <label >Assign To Someone Else</label>
         </div>
-        {showUsername&&<input 
+        {showUsername&& <input 
+          className='input'  
           name='title' 
           type='text'
           value={toSomeone}
@@ -131,17 +137,18 @@ const AddReminder = () =>{
         />
         }
         <br/>
-        <label>Labels:</label>
         <Labels setLabels={setLabels}/>
         {/* <FileUploader setAttachment={setAttachment}/> */}
         <br/>
         {errMsg}
         <br/>
-        <input 
+         <input 
+          className='input'  
           type='submit' 
           value='Add Reminder' 
         />
       </form>
+      </div>
     )
   }
 

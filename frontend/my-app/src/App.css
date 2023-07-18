@@ -105,6 +105,7 @@ input{
 }
 .button-container{
   display: flex;
+  padding-bottom: 0;
 }
 .login-btn{
   height:70px;
@@ -124,6 +125,7 @@ input{
   align-items: center;
   font-size: 16px;
   background-color: lightblue;
+  margin-bottom: 5px;
 }
 .small-icon{
   width:20px;
@@ -146,4 +148,65 @@ input{
 .read-only{
     outline: inherit;
     background-color: aliceblue;
+}
+.user-icon {
+  position: absolute;
+  right: 20px;
+  top:20px;
+  width:40px;
+  height:40px;
+}
+
+.reminders-title{
+  line-height: 60px;
+}
+.nav-item{
+  background-color: lightblue;
+  width:200px;
+  height:50px;
+  border-radius: 10px;
+  margin-right: 5px;
+  margin-left: 5px;
+}
+.items-container{
+  display: flex;
+  flex-direction: column;
+}
+.add-btn{
+  align-self: flex-start;
+  margin-left: 5px;
+  padding-left: 30px;
+  padding-right: 30px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+}
+.order-by{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 5px;
+}
+
+.cont{
+  display: flex;
+  width: '100%';
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 5px;
+}
+.pink{
+  background-color: lightpink;
+}
+
+.reminder{
+  margin-left: 5px;
+  margin-right: 5px;
+  display: flex;
+  width: '100%';
+  justify-content: space-around;
+  border: 1px solid grey;
 }
