@@ -86,14 +86,15 @@ public class AuthenticationService {
   public AuthenticationResponse authenticate(AuthenticationRequest request) {
     log.info(
         "Authentication service authenticate function called with username: {}",
-        request.getUsername());
+        request.getEmail());
+
     authenticationManager.authenticate(
         new UsernamePasswordAuthenticationToken(
-            request.getUsername(),
+            request.getEmail(),
             request.getPassword()
         )
     );
-    var user = userDao.selectUserByUsername(request.getUsername()).orElseThrow();
+    var user = userDao.findByEmail(request.getEmail()).orElseThrow();
     var jwtToken = jwtService.generateToken(user);
     var refreshToken = jwtService.generateRefreshToken(user);
     revokeAllUserTokens(user);
@@ -150,7 +151,7 @@ public class AuthenticationService {
     refreshToken = authHeader.substring(jwtHeaderBeginning.length());
     username = jwtService.extractUsername(refreshToken);
     if (username != null) {
-      var user = this.userDao.selectUserByUsername(username).orElseThrow();
+      var user = this.userDao.findByEmail(username).orElseThrow();
       if (jwtService.isTokenValid(refreshToken, user)) {
         var accessToken = jwtService.generateToken(user);
         revokeAllUserTokens(user);
