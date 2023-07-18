@@ -197,6 +197,7 @@ public class ReminderService {
     log.info("reminder service get old reminders function called by user with username: {}",
         user.getUsername());
     int daysBefore = user.getDaysBeforeReminderDelete();
+    log.info("user info {} how many days reminders shown {}", user, daysBefore);
     LocalDateTime today = LocalDateTime.now();
     LocalDateTime daysBeforeDate = LocalDateTime.now().minusDays(daysBefore);
     List<Reminder> reminders = getReminders();
