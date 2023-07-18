@@ -22,12 +22,12 @@ public class ApplicationConfig {
 
   @Bean
   public UserDetailsService userDetailsService() {
-    return username -> {
-      log.info("Selecting user by username {}", username);
-      return repository.selectUserByUsername(username)
+    return email -> {
+      log.info("Selecting user by email {}", email);
+      return repository.findByEmail(email)
           .orElseThrow(() -> {
-            log.error("Username not found {}", username);
-            return new InvalidInputException(String.format("Username Not found %s", username));
+            log.error("email not found {}", email);
+            return new InvalidInputException(String.format("email Not found %s", email));
           });
     };
   }

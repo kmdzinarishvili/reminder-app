@@ -16,7 +16,7 @@ public class UserResponse {
   private float timezoneOffsetHours;
   private int daysBeforeReminderDelete;
   public UserResponse(User user) {
-    this.username = user.getUsername();
+    this.username = user.getName();
     this.email = user.getEmail();
     this.timezoneOffsetHours = user.getTimezoneOffsetHours();
     this.daysBeforeReminderDelete = user.getDaysBeforeReminderDelete();

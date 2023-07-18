@@ -39,6 +39,6 @@ public class ReminderResponse {
     this.priority = reminder.getPriority();
     this.category = reminder.getCategory();
     this.labels = reminder.getLabels();
-    this.username = reminder.getUser().getUsername();
+    this.username = reminder.getUser().getName();
   }
 }

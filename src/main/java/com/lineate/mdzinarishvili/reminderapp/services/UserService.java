@@ -28,27 +28,27 @@ public class UserService {
   }
 
   public List<User> getUsers(UsersRequest usersRequest) {
-    UserDetails userDetails =
-        (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    String username = userDetails.getUsername();
+    User user =
+        (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    String username = user.getName();
     log.info(
         "Get users request made by: {}", username);
     return userDao.selectUsers(usersRequest.getUsersSortType());
   }
 
   public User addNewUser(User user) {
-    log.info("Add user request for user with username: {}", user.getUsername());
+    log.info("Add user request for user with username: {}", user.getName());
     return userDao.insertUser(user).orElseThrow();
   }
 
   public UserResponse updateUser(UserRequest userRequest) {
     User user =
         (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    String username = user.getUsername();
+    String username = user.getName();
     System.out.println("user from security context"+user);
     log.info("User: {} made update request with data {}", username,
         userRequest);
-    user.setUsername(userRequest.getUsername());
+    user.setName(userRequest.getUsername());
     user.setTimezoneOffsetHours(userRequest.getTimezoneOffsetHours());
     user.setDaysBeforeReminderDelete(userRequest.getDaysBeforeReminderDelete());
     User result = userDao.updateUser(user).orElseThrow();
@@ -56,9 +56,9 @@ public class UserService {
   }
 
   public void deleteUser(Long id) {
-    UserDetails userDetails =
-        (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    String username = userDetails.getUsername();
+    User authUser =
+        (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    String username = authUser.getName();
     log.info("User: {} made delete request for user with id: {}", username, id);
     Optional<User> users = userDao.selectUserById(id);
     users.ifPresentOrElse(user -> {
@@ -74,9 +74,9 @@ public class UserService {
   }
 
   public boolean deleteUser(DeleteUserRequest deleteUserRequest) {
-    UserDetails userDetails =
-        (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    String username = userDetails.getUsername();
+    User authUser =
+        (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    String username = authUser.getName();
     log.info("User: {} made delete request for user with email: {} ",
         username,
         deleteUserRequest.getEmail());
@@ -111,7 +111,7 @@ public class UserService {
     User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     log.info(
         "user service get getting logged in user data for: {}",
-        user.getUsername());
+        user.getName());
     return new UserResponse(getUser(user.getId()));
   }
 
@@ -119,7 +119,7 @@ public class UserService {
     User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     log.info(
         "user service get deleting logged in user data for: {}",
-        user.getUsername());
+        user.getName());
     deleteUser(user.getId());
   }
 }

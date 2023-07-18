@@ -54,7 +54,7 @@ public class ReminderService {
     User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     Long user_id = user.getId();
     log.info("reminder service get all reminders by priority function called by user with username: {}",
-        user.getUsername());
+        user.getName());
     List<Reminder> reminders = reminderDao.selectRemindersOrderByPriority(user_id);
     return groupReminders(reminders);
   }
@@ -63,7 +63,7 @@ public class ReminderService {
     User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     Long user_id = user.getId();
     log.info("reminder service get all reminders by creation function called by user with username: {}",
-        user.getUsername());
+        user.getName());
     List<Reminder> reminders = reminderDao.selectRemindersOrderByCreationDate(user_id);
     return groupReminders(reminders);
   }
@@ -72,7 +72,7 @@ public class ReminderService {
     User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     Long user_id = user.getId();
     log.info("reminder service get all reminders function called by user with username: {}",
-        user.getUsername());
+        user.getName());
     List<Reminder> reminders = reminderDao.selectReminders(user_id);
     return groupReminders(reminders);
   }
@@ -81,12 +81,12 @@ public class ReminderService {
     User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     log.info(
         "reminder service mark reminder completed function called by user with username: {} with data: {}",
-        user.getUsername(), reminderCompletedRequest);
+        user.getName(), reminderCompletedRequest);
     boolean res = reminderDao.setCompletedDate(reminderCompletedRequest.getDate(),
         reminderCompletedRequest.getId());
     log.info(
         "reminder service setting date of last activity to now for completion user with username: {}",
-        user.getUsername());
+        user.getName());
     userDao.setDateOfLastActivityNow(user.getId());
     return res;
   }
@@ -136,7 +136,7 @@ public class ReminderService {
     User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     Long user_id = user.getId();
     log.info("reminder service get overdue reminders function called by user with username: {}",
-        user.getUsername());
+        user.getName());
     List<Reminder> reminders = reminderDao.selectOverdueReminders(user_id);
     reminders = groupReminders(reminders);
     List<Reminder> overdueReminders = new ArrayList<>();
@@ -195,7 +195,7 @@ public class ReminderService {
   public List<Reminder> getOldReminders() {
     User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     log.info("reminder service get old reminders function called by user with username: {}",
-        user.getUsername());
+        user.getName());
     int daysBefore = user.getDaysBeforeReminderDelete();
     log.info("user info {} how many days reminders shown {}", user, daysBefore);
     LocalDateTime today = LocalDateTime.now();
@@ -244,7 +244,7 @@ public class ReminderService {
   private List<Reminder> getRemindersDay(LocalDateTime date, List<Reminder> reminders) {
     User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     log.info("reminder service get reminders on the day {}  called by user with username: {}",
-        date, user.getUsername());
+        date, user.getName());
     List<Reminder> dateReminders = new ArrayList<>();
     reminders.forEach((reminder) -> {
       LocalTime reminderTime = reminder.getDate().toLocalTime();
@@ -286,7 +286,7 @@ public class ReminderService {
     User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     log.info(
         "reminder service get reminders in between {} for {} days  function called by user with username: {}",
-        startDate, howManyDays, user.getUsername());
+        startDate, howManyDays, user.getName());
     LocalDateTime end = LocalDateTime.now().plusDays(howManyDays);
     List<Reminder> newReminders = new ArrayList<>();
     reminders.forEach((reminder) -> {
@@ -331,7 +331,7 @@ public class ReminderService {
     User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     log.info(
         "reminder service get reminders function called for today by user with username: {}",
-        user.getUsername());
+        user.getName());
     List<Reminder> reminders = getReminders();
     return getRemindersDay(LocalDateTime.now(), reminders);
   }
@@ -339,7 +339,7 @@ public class ReminderService {
     User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     log.info(
         "reminder service get reminders function called for today by user with username: {}",
-        user.getUsername());
+        user.getName());
     List<Reminder> reminders = getRemindersOrderByCreation();
     return getRemindersDay(LocalDateTime.now(),reminders);
   }
@@ -347,7 +347,7 @@ public class ReminderService {
     User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     log.info(
         "reminder service get reminders function called for today by user with username: {}",
-        user.getUsername());
+        user.getName());
     List<Reminder> reminders = getRemindersOrderByPriority();
     return getRemindersDay(LocalDateTime.now(),reminders);
   }
@@ -355,7 +355,7 @@ public class ReminderService {
     User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     log.info(
         "reminder service get reminders function called for tomorrow by user with username: {}",
-        user.getUsername());
+        user.getName());
     List<Reminder> reminders = getReminders();
     return  getRemindersDay(LocalDateTime.now().toLocalDate().atStartOfDay().plusDays(1), reminders);
   }
@@ -363,7 +363,7 @@ public class ReminderService {
     User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     log.info(
         "reminder service get reminders function called for this week by user with username: {}",
-        user.getUsername());
+        user.getName());
     LocalDateTime today = LocalDateTime.now();
     int lengthOfWeek = 7;
     List<Reminder> reminders = getReminders();
@@ -374,13 +374,13 @@ public class ReminderService {
     User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     log.info(
         "reminder service get add new reminder function called by user with username: {} with data {}",
-        principal.getUsername(), reminderRequest);
+        principal.getName(), reminderRequest);
     Reminder reminder = new Reminder(reminderRequest);
     if (reminderRequest.getUserEmail() == null && reminderRequest.getUserUsername() == null) {
       User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
       log.info(
           "reminder service new reminder assigned to self: {} with data {}",
-          user.getUsername(), reminderRequest);
+          user.getName(), reminderRequest);
       reminder.setUser(user);
       reminder.setAcceptanceStatus(true);
     } else {
@@ -394,7 +394,7 @@ public class ReminderService {
         } else {
           log.error(
               "reminder service new reminder add failed with invalid username: {} by {}",
-              reminderRequest.getUserUsername(), principal.getUsername());
+              reminderRequest.getUserUsername(), principal.getName());
           throw new InvalidInputException("User with username not found");
         }
       } else {
@@ -407,7 +407,7 @@ public class ReminderService {
         } else {
           log.error(
               "reminder service new reminder add failed with invalid email: {} by {}",
-              reminderRequest.getUserEmail(), principal.getUsername());
+              reminderRequest.getUserEmail(), principal.getName());
           throw new InvalidInputException("User with email not found");
         }
       }
@@ -421,7 +421,7 @@ public class ReminderService {
     ReminderResponse reminderResponse = new ReminderResponse(reminderDao.insertReminder(reminder));
     log.info(
         "reminder service setting date of last activity to now for completion user with username: {}",
-        principal.getUsername());
+        principal.getName());
     userDao.setDateOfLastActivityNow(principal.getId());
     return reminderResponse;
   }
@@ -431,7 +431,7 @@ public class ReminderService {
     try {
       log.info(
           "reminder service update reminder assigned by user: {} with data {}",
-          user.getUsername(), reminderRequest);
+          user.getName(), reminderRequest);
       Reminder reminder = new Reminder(reminderRequest);
       reminder.setUser(user);
       reminder.setId(id);
@@ -439,7 +439,7 @@ public class ReminderService {
     } catch (Exception e) {
       log.error(
           "reminder service update FAILED assigned by user: {} with data {}",
-          user.getUsername(), reminderRequest);
+          user.getName(), reminderRequest);
       throw new IllegalStateException(e.getMessage());
     }
 
@@ -449,7 +449,7 @@ public class ReminderService {
     User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     log.info(
         "reminder service delete reminder by user: {} for reminder with id {}",
-        user.getUsername(), id);
+        user.getName(), id);
     return reminderDao.deleteReminderById(id);
   }
 
@@ -458,12 +458,12 @@ public class ReminderService {
     if (reminderDao.isPending(id)) {
       log.info(
           "reminder service reject reminder by user: {} for reminder with id {}",
-          user.getUsername(), id);
+          user.getName(), id);
       return reminderDao.deleteReminderById(id);
     } else {
       log.error(
           "reminder service reject reminder FAILED by user: {} for reminder with id {} because reminder not pending",
-          user.getUsername(), id);
+          user.getName(), id);
       throw new InvalidInputException("This reminder is not pending, cannot be rejected.");
     }
   }
@@ -473,12 +473,12 @@ public class ReminderService {
     if (reminderDao.isPending(id)) {
       log.info(
           "reminder service accept reminder by user: {} for reminder with id {}",
-          user.getUsername(), id);
+          user.getName(), id);
       return reminderDao.setAcceptedTrue(id);
     } else {
       log.error(
           "reminder service accept reminder FAILED by user: {} for reminder with id {} because reminder not pending",
-          user.getUsername(), id);
+          user.getName(), id);
       throw new InvalidInputException("This reminder is not pending, cannot be rejected.");
     }
   }
@@ -488,13 +488,13 @@ public class ReminderService {
     User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     log.info(
         "reminder service get reminder by id ({}) by user: {}",
-        id, user.getUsername());
+        id, user.getName());
     try{
       return groupReminders(reminderDao.selectReminderById(id)).get(0);
     }catch (Exception e) {
       log.error(
           "reminder service get reminder FAILED by user: {} for reminder with id {} because reminder id not found",
-          user.getUsername(), id);
+          user.getName(), id);
       throw new NotFoundException(String.format("Reminder with id %s not found", id));
     }
   }
@@ -503,7 +503,7 @@ public class ReminderService {
     User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     log.info(
         "reminder service get reminders function called for today by user with username: {}",
-        user.getUsername());
+        user.getName());
     List<Reminder> reminders = getRemindersOrderByCreation();
     return getRemindersDay(LocalDateTime.now().toLocalDate().atStartOfDay().plusDays(1),reminders);
   }
@@ -512,7 +512,7 @@ public class ReminderService {
     User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     log.info(
         "reminder service get reminders function called for today by user with username: {}",
-        user.getUsername());
+        user.getName());
     List<Reminder> reminders = getRemindersOrderByPriority();
     return getRemindersDay(LocalDateTime.now().toLocalDate().atStartOfDay().plusDays(1),reminders);
   }
@@ -521,7 +521,7 @@ public class ReminderService {
     User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     log.info(
         "reminder service get reminders function called for this week order by creation by user with username: {}",
-        user.getUsername());
+        user.getName());
     LocalDateTime today = LocalDateTime.now();
     int lengthOfWeek = 7;
     List<Reminder> reminders = getRemindersOrderByCreation();
@@ -531,7 +531,7 @@ public class ReminderService {
     User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     log.info(
         "reminder service get reminders function called for this week order by prioirty by user with username: {}",
-        user.getUsername());
+        user.getName());
     LocalDateTime today = LocalDateTime.now();
     int lengthOfWeek = 7;
     List<Reminder> reminders = getRemindersOrderByPriority();

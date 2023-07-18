@@ -48,7 +48,7 @@ public class AuthenticationService {
       throw new InvalidInputException("password cannot be empty");
     }
     var user = User.builder()
-        .username(request.getUsername())
+        .name(request.getUsername())
         .email(request.getEmail())
         .password(passwordEncoder.encode(request.getPassword()))
         .role(RoleType.USER)
@@ -68,7 +68,7 @@ public class AuthenticationService {
     log.info("Authentication service update admin function called with username: {} and email: {}",
         request.getUsername(), request.getEmail());
     var user = User.builder()
-        .username(request.getUsername())
+        .name(request.getUsername())
         .email(request.getEmail())
         .password(passwordEncoder.encode(request.getPassword()))
         .role(request.getRole())
@@ -108,7 +108,7 @@ public class AuthenticationService {
   private void saveUserToken(User user, String jwtToken) {
     log.info(
         "Authentication service save token function called for user with username: {}",
-        user.getUsername());
+        user.getName());
     var token = Token.builder()
         .user(user)
         .token(jwtToken)
@@ -122,7 +122,7 @@ public class AuthenticationService {
   private void revokeAllUserTokens(User user) {
     log.info(
         "Authentication service revoke tokens function called for user with username: {}",
-        user.getUsername());
+        user.getName());
     var validUserTokens = tokenDaoImpl.findAllValidTokenByUser(user.getId());
     if (validUserTokens.isEmpty()) {
       return;

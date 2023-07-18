@@ -18,9 +18,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class User implements UserDetails {
+public class User implements UserDetails
+{
   private Long id;
-  private String username;
+  private String name;
   private String email;
   private String password;
   private RoleType role;
@@ -35,9 +36,12 @@ public class User implements UserDetails {
 
   public User(Long id, String username, String email) {
     this.id = id;
-    this.username = username;
+    this.name = username;
     this.email = email;
   }
+
+
+
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -47,6 +51,11 @@ public class User implements UserDetails {
   @Override
   public String getPassword() {
     return password;
+  }
+
+  @Override
+  public String getUsername() {
+    return this.email;
   }
 
   @Override

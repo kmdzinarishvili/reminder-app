@@ -56,8 +56,8 @@ public class UserDaoImpl implements UserDao {
   public User save(User user) {
 
     try {
-      log.info("Saving user with username: {}", user.getUsername());
-      jdbcTemplate.update(SQL_INSERT_USER, user.getUsername(), user.getEmail(),
+      log.info("Saving user with username: {}", user.getName());
+      jdbcTemplate.update(SQL_INSERT_USER, user.getName(), user.getEmail(),
           user.getPassword(), user.getTimezoneOffsetHours(), findRoleId(user.getRole()));
       return this.findByEmail(user.getEmail()).get();
     } catch (Exception exception) {
@@ -67,7 +67,7 @@ public class UserDaoImpl implements UserDao {
 
   @Override
   public User updateOrInsertUser(User user) {
-    log.info("Updating or inserting user with username: {}", user.getUsername());
+    log.info("Updating or inserting user with username: {}", user.getName());
     try {
       Long id = findByEmail(user.getEmail()).get().getId();
       user.setId(id);
@@ -124,7 +124,7 @@ public class UserDaoImpl implements UserDao {
     log.info("updating user with email: {}", user.getEmail());
     String SQL_UPDATE_USER =
         "update users set username = ?, password  = ?, timezone_offset_hours = ? where user_id = ?";
-    jdbcTemplate.update(SQL_UPDATE_USER, user.getUsername(),
+    jdbcTemplate.update(SQL_UPDATE_USER, user.getName(),
         user.getPassword(), user.getTimezoneOffsetHours(),
         user.getId()); // can't update role or email
     return this.selectUserById(user.getId());
@@ -140,9 +140,9 @@ public class UserDaoImpl implements UserDao {
   @Override
   public Optional<User> insertUser(User user) {
     log.info("Insert user with email: {}", user.getEmail());
-    jdbcTemplate.update(SQL_INSERT_USER, user.getUsername(), user.getEmail(),
+    jdbcTemplate.update(SQL_INSERT_USER, user.getName(), user.getEmail(),
         user.getPassword(), findRoleId(user.getRole()));
-    Long id = this.selectUserByUsername(user.getUsername()).get().getId();
+    Long id = this.selectUserByUsername(user.getName()).get().getId();
     return this.selectUserById(id);
 
   }
