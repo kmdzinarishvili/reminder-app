@@ -42,7 +42,7 @@ function NavBar({ setWhichFetch }) {
 
 
 function Home() {
-    const { auth } = useAuth();
+    const { auth, setAuth } = useAuth();
     const navigate = useNavigate();
     const [data, setData]= useState([]);
     const [overdueReminders, setOverdueReminders] = useState([]);
@@ -58,17 +58,30 @@ function Home() {
         const response = await query(
             {urlExtension:OLD,
             accessToken:auth.accessToken}
-        );
-        console.log('fetching old', response)
-        setData(response?.data);
+        ).catch(err =>{
+            if(err?.response?.status===403){
+                setAuth({});
+                navigate('/login');
+            }
+        });
+        let reminders = response?.data?.map(el => {
+            return {...el,
+                isCompleted:true
+            }
+        })
+        setData(reminders);
     }
 
     const fetchData = async (base,extension)=>{
         const response = await query(
             {urlExtension:base+extension,
             accessToken:auth.accessToken}
-        );
-        console.log('fetching today', response)
+        ).catch(err =>{
+            if(err?.response?.status===403){
+                setAuth({});
+                navigate('/login');
+            }
+        });
         setData(response?.data);
     }
 
@@ -79,8 +92,12 @@ function Home() {
                 'Content-Type': 'application/json', 
                 'Authorization': "Bearer "+ auth.accessToken,
             }, 
-        }
-        );
+        }).catch(err =>{
+            if(err?.response?.status===403){
+                setAuth({});
+                navigate('/login');
+            };
+          });
         setOverdueReminders(response?.data);
     }
 
@@ -105,7 +122,12 @@ function Home() {
                     'Authorization': "Bearer "+ auth.accessToken,
                 }, 
             }
-        );
+        ).catch(err =>{
+            if(err?.response?.status===403){
+                setAuth({});
+                navigate('/login');
+            };
+          });;
         setUserData(response.data);
     }
 
@@ -164,7 +186,7 @@ function Home() {
             </div>
             <div className="reminder-cont">
                     {data.map((reminder)=>
-                        <Reminder key={reminder.id} reminder={reminder} setFetchToggle={setFetchToggle}/>
+                        <Reminder key={reminder.id} reminder={reminder} setFetchToggle={setFetchToggle} isCompleted={reminder.isCompleted}/>
                     )}
             </div>
         </section>

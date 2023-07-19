@@ -1,7 +1,4 @@
 package com.lineate.mdzinarishvili.reminderapp.controllers;
-
-
-import com.lineate.mdzinarishvili.reminderapp.dto.GetRemindersRequest;
 import com.lineate.mdzinarishvili.reminderapp.dto.ReminderCompletedRequest;
 import com.lineate.mdzinarishvili.reminderapp.dto.ReminderRequest;
 import com.lineate.mdzinarishvili.reminderapp.dto.ReminderResponse;
@@ -21,11 +18,6 @@ public class ReminderController {
 
   public ReminderController(ReminderService reminderService) {
     this.reminderService = reminderService;
-  }
-
-  @GetMapping
-  public List<Reminder> listReminders() {
-    return reminderService.getReminders();
   }
 
   @GetMapping("/today/creation")
@@ -53,15 +45,6 @@ public class ReminderController {
   public List<ReminderResponse> getWeekRemindersOrderByPriority() {
     return reminderService.getRemindersWeekByPriority();
   }
-  @GetMapping("/tomorrow")
-  public List<Reminder> listRemindersTomorrow() {
-    return reminderService.getRemindersTomorrow();
-  }
-  @GetMapping("/week")
-  public List<Reminder> listRemindersThisWeek() {
-    return reminderService.getRemindersWeek();
-  }
-
   @GetMapping("/old")
   public List<ReminderResponse> listOldReminders() {
     return reminderService.getOldReminders();
@@ -74,7 +57,6 @@ public class ReminderController {
 
   @PostMapping
   public ReminderResponse addReminder(@RequestBody ReminderRequest reminderRequest) {
-    System.out.println(reminderRequest);
     return reminderService.addNewReminder(reminderRequest);
   }
 
@@ -100,7 +82,7 @@ public class ReminderController {
   }
 
   @GetMapping("/overdue")
-  public List<Reminder> getOverdueReminder() {
+  public List<ReminderResponse> getOverdueReminder() {
     return reminderService.getOverdueReminders();
   }
 

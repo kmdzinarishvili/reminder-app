@@ -15,7 +15,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Repository;
 
 
@@ -104,6 +103,8 @@ public class ReminderDAOImpl implements ReminderDAO {
     log.info("select all reminders in dao for user with id: {}", user_id);
     return jdbcTemplate.query(SQL_GET_ALL, new ReminderMapper(), user_id);
   }
+
+
 
   @Override
   public List<Reminder> selectRemindersOrderByCreationDate(Long user_id) {
@@ -224,7 +225,6 @@ public class ReminderDAOImpl implements ReminderDAO {
       params.put("priority", reminder.getPriority());
       params.put("category_id", categoryId);
       params.put("acceptance_status", reminder.getAcceptanceStatus());
-      System.out.println(params);
       namedParameterJdbcTemplate.update(SQL_INSERT_REMINDER, new MapSqlParameterSource(params),
           generatedKeyHolder, new String[] {"reminder_id"});
       int id = Objects.requireNonNull(generatedKeyHolder.getKey()).intValue();

@@ -34,19 +34,13 @@ public class UserService {
     return userDao.selectUsers(sortType).stream().map(UsersResponse::new).collect(Collectors.toList());
   }
 
-  public User addNewUser(User user) {
-    log.info("Add user request for user with username: {}", user.getName());
-    return userDao.insertUser(user).orElseThrow();
-  }
-
   public UserResponse updateUser(UserRequest userRequest) {
     User user =
         (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     String username = user.getName();
-    System.out.println("user from security context"+user);
     log.info("User: {} made update request with data {}", username,
         userRequest);
-    if(userDao.selectUserByUsername(userRequest.getUsername()).isPresent()){
+    if( !username.equals(userRequest.getUsername()) &&userDao.selectUserByUsername(userRequest.getUsername()).isPresent()){
       log.error("User: {} made update for username that is already in use with data {}", username,
           userRequest.getUsername());
       throw new InvalidInputException("Username is already in use");

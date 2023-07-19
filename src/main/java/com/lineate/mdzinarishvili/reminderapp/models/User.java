@@ -1,6 +1,9 @@
 package com.lineate.mdzinarishvili.reminderapp.models;//package com.alibou.security.user;
 
 
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -25,8 +28,8 @@ public class User implements UserDetails
   private String email;
   private String password;
   private RoleType role;
-  private Date registrationDate;
-  private Date lastActivityDate;
+  private LocalDateTime registrationDate;
+  private LocalDateTime lastActivityDate;
   private float timezoneOffsetHours;
   private int daysBeforeReminderDelete;
 

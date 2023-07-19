@@ -124,9 +124,10 @@ public class UserDaoImpl implements UserDao {
   public Optional<User> updateUser(User user) {
     log.info("updating user with email: {}", user.getEmail());
     String SQL_UPDATE_USER =
-        "update users set username = ?, password  = ?, timezone_offset_hours = ? where user_id = ?";
+        "update users set username = ?, timezone_offset_hours = ?, days_before_reminder_delete = ? where user_id = ?";
     jdbcTemplate.update(SQL_UPDATE_USER, user.getName(),
-        user.getPassword(), user.getTimezoneOffsetHours(),
+        user.getTimezoneOffsetHours(),
+        user.getDaysBeforeReminderDelete(),
         user.getId()); // can't update role or email
     return this.selectUserById(user.getId());
   }

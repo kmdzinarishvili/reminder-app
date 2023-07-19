@@ -136,7 +136,7 @@ public class ReminderService {
     }
     return date;
   }
-  public List<Reminder> getOverdueReminders() {
+  public List<ReminderResponse> getOverdueReminders() {
     User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     Long user_id = user.getId();
     log.info("reminder service get overdue reminders function called by user with username: {}",
@@ -156,7 +156,8 @@ public class ReminderService {
       }
       overdueReminders.add(reminder);
     });
-    return overdueReminders;
+    return overdueReminders.stream().map(ReminderResponse::new).collect(
+        Collectors.toList());
   }
 
   private boolean checkInRange(LocalDateTime date, LocalDateTime start, LocalDateTime end){
@@ -224,7 +225,7 @@ public class ReminderService {
         case WEEKLY:
           if( reminder.getWhenCompleted()!=null&& checkInRange(LocalDateTime.ofInstant(reminder.getWhenCompleted(), ZoneOffset.UTC), daysBeforeDate, today)) {
             LocalDateTime weeklyDate =
-                getWeeklyReminderDate(0, daysBefore, daysBeforeDate, LocalDateTime.of(reminder.getWhichCompleted(), reminderDate.toLocalTime()), false);
+                getWeeklyReminderDate(0, daysBefore, daysBeforeDate, LocalDateTime.ofInstant(reminder.getWhenCompleted(), ZoneOffset.UTC).with(reminderDate.toLocalTime()), false);
             if (weeklyDate != null) {
               reminder.setDate(weeklyDate);
               oldReminders.add(reminder);
@@ -234,7 +235,7 @@ public class ReminderService {
         case MONTHLY:
           if( reminder.getWhenCompleted()!=null&& checkInRange(LocalDateTime.ofInstant(reminder.getWhenCompleted(), ZoneOffset.UTC), daysBeforeDate, today)) {
             LocalDateTime monthlyDate =
-                getMonthlyReminderDate(0, daysBefore, daysBeforeDate, LocalDateTime.of(reminder.getWhichCompleted(), reminder.getDate().toLocalTime()), false);
+                getMonthlyReminderDate(0, daysBefore, daysBeforeDate,  LocalDateTime.ofInstant(reminder.getWhenCompleted(), ZoneOffset.UTC).with( reminder.getDate().toLocalTime()), false);
             if (monthlyDate != null) {
               reminder.setDate(monthlyDate);
               oldReminders.add(reminder);
@@ -349,6 +350,7 @@ public class ReminderService {
     List<Reminder> reminders = getReminders();
     return getRemindersDay(LocalDateTime.now(), reminders);
   }
+
   public List<ReminderResponse> getRemindersTodayByCreation() {
     User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     log.info(
@@ -451,6 +453,7 @@ public class ReminderService {
       Reminder reminder = new Reminder(reminderRequest);
       reminder.setUser(user);
       reminder.setId(id);
+      ReminderResponse res =new ReminderResponse(reminderDao.updateReminder(reminder));
       return new ReminderResponse(reminderDao.updateReminder(reminder));
     } catch (Exception e) {
       log.error(

@@ -26,8 +26,12 @@ const Register = () => {
                 {
                     headers: { 'Content-Type': 'application/json' },
                 }
-            );
-            console.log(JSON.stringify(response?.data));
+            ).catch(err =>{
+                if(err?.response?.status===403){
+                    setAuth({});
+                    navigate('/login');
+                };
+              });
             const accessToken = response?.data?.access_token;
             const role = response?.data?.role;
             setAuth({  role, accessToken });

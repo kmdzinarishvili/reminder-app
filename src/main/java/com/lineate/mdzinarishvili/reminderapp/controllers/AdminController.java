@@ -30,9 +30,9 @@ public class AdminController {
     return userService.getUsersOrderByLastActivity();
   }
 
-  @DeleteMapping
-  public boolean delete(@RequestBody DeleteUserRequest deleteUserRequest) {
-    return userService.deleteUser(deleteUserRequest);
+  @DeleteMapping("/{id}")
+  public void delete(@PathVariable("id") Long id) {
+    userService.deleteUser(id);
   }
 
 }

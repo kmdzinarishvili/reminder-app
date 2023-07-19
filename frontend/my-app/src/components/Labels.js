@@ -40,7 +40,7 @@ export default function Labels ({initLabels, setLabels}) {
   return (
     <div className='box'>
       <div className='label' style={{display:'flex', justifyContent:'center', alignItems:'center'}}>
-        <label >Labels:</label>
+        <label>Labels:</label>
       </div>
       {arr.map((item, i) => {
         console.log(item.value)
@@ -54,6 +54,7 @@ export default function Labels ({initLabels, setLabels}) {
             id={i}
             type="text"
             size="40"
+            required={i===0}
           />
         );
       })}

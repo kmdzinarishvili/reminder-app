@@ -2,12 +2,9 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import useAuth from "../hooks/useAuth";
 import LogoutBtn from "../components/LogoutBtn";
-import axios from 'axios';
-import Reminder from "../components/Reminder";
 import { query } from "../helper/query";
+import User from "../components/User";
  
-const {REACT_APP_API_BASE_URL: BASE_URL} = process.env;
-
 const ADMIN = '/admin';
 
 const USERNAME ='/username';
@@ -15,7 +12,7 @@ const REGISTRATION = '/registration';
 const ACTIVITY ='/activity';
 
 
-const NavBar = ({setWhichFetch, howManyDays}) =>{
+const NavBar = ({setWhichFetch}) =>{
 
     const fetchByUsername = async () =>{
         setWhichFetch(USERNAME)
@@ -27,49 +24,60 @@ const NavBar = ({setWhichFetch, howManyDays}) =>{
         setWhichFetch(ACTIVITY)
     }
     return <div className="row">
-        <button onClick={fetchByUsername}>Username</button>
-        <button onClick={fetchByRegistration}>Registration Date</button>
-        <button onClick={fetchByLastActifity}>Last Activity</button>
+        Order By: 
+        <button className="nav-item" onClick={fetchByUsername}>Username</button>
+        <button className="nav-item" onClick={fetchByRegistration}>Registration Date</button>
+        <button className="nav-item"onClick={fetchByLastActifity}>Last Activity</button>
     </div>
 }
 
 
 const Admin = () => {
-    const { auth } = useAuth();
-    const navigate = useNavigate();
+    const { auth, setAuth } = useAuth();
     const [data, setData]= useState([]);
     const [whichFetch, setWhichFetch] = useState(USERNAME);
     const [fetchToggle, setFetchToggle] = useState(false);
-    const [userData, setUserData] = useState([]);
+    const navigate = useNavigate();
 
     const fetchUsers= async (fetchType) =>{
         console.log(USERNAME);
         const response = await query(
             {urlExtension:ADMIN+fetchType,
             accessToken:auth.accessToken}
-        );
-        console.log('fetching by ', response)
+        ).catch(err =>{
+            if(err?.response?.status===403){
+                setAuth({});
+                navigate('/login');
+            }
+        });
         setData(response?.data);
     }
 
     useEffect(()=>{
         fetchUsers(whichFetch);
-    },[whichFetch,fetchToggle])
+    },[whichFetch, fetchToggle])
 
     return (
         <section className="page">
-            <h1>Admin Page</h1>
-            <div className="flexGrow">
-                Order By: <NavBar setWhichFetch={setWhichFetch} howManyDays={userData.daysBeforeReminderDelete}/>
-                   <div className="App">
-                    {data.map((item)=>{
-                       return <p key={item.username}>{item.username}</p>
+            <div style={{position:'absolute',right:20, top:20}}>
+                <LogoutBtn style={{width:100, height:40}}/>
+            </div>
+            <h1 className="reminders-title">Admin Page</h1>
+                <NavBar setWhichFetch={setWhichFetch} />
+                   <div className="contain">
+                   <table >
+                   <tr>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Registration Date</th>
+                        <th>Date of Last Activity</th>
+                        <th>Delete</th>
+                    </tr>
+                    {data.map((user)=>{
+                       return <User user={user} setFetchToggle={setFetchToggle}/>
                     })}
-                    {/* {data.map((reminder)=>
-                        <Reminder key={reminder.id} reminder={reminder} setFetchToggle={setFetchToggle}/>
-                    )} */}
-                </div>
-                <LogoutBtn/>
+                    </table>
+                
             </div>
         </section>
     )

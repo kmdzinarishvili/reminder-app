@@ -15,8 +15,6 @@ const Login = () => {
     const [password, setPassword] = useState();
     const [errMsg, setErrMsg] = useState();
 
-
-
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -26,13 +24,10 @@ const Login = () => {
                 {
                     headers: { 'Content-Type': 'application/json' },
                 }
-            );
-            console.log(JSON.stringify(response));
+            )
             const accessToken = response?.data?.access_token;
             const role = response?.data?.role;
-            console.log("auth", {  role, accessToken })
             setAuth({  role, accessToken });
-            console.log("set auth", auth)
             if(role==="ADMIN"){
                 navigate("/admin");
             }else{

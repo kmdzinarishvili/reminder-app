@@ -4,23 +4,29 @@ import {post} from '../helper/post';
 
 const LOGOUT_URL = '/auth/logout';
 
-const LogoutBtn = () => {
+const LogoutBtn = ({style}) => {
     const navigate = useNavigate();
     const { auth, setAuth } = useAuth();
 
-    const logout = async () => {
+    const logout = async (e) => {
+        e.preventDefault()
         const response = await post({urlExtension: LOGOUT_URL,
             body:null,
             accessToken:auth.accessToken
+        }).catch(err =>{
+            if(err?.response?.status===403){
+                setAuth({});
+                navigate('/login');
+            }
         });
-        if(response.status ===200 ){
+        if(response?.status ===200 ){
             setAuth({});
             navigate('/login');
         } 
     }
 
     return (
-        <button className="login-btn purple" onClick={logout}>Sign Out</button>
+        <button className="login-btn purple" onClick={logout} style={style}>Sign Out</button>
     )
 }
 

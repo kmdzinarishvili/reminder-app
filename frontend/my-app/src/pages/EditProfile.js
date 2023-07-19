@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useState } from 'react';
 import useAuth from '../hooks/useAuth';
 import { post } from '../helper/post';
@@ -23,7 +23,7 @@ const EditProfile = () =>{
     const [errMsg, setErrMsg]=useState();
 
     const isUnchanged = () =>{
-      return username ===  userData.username && timeZone === userData.timezoneOffsetHours && numDays === numDays;
+      return username ===  userData.username && timeZone === userData.timezoneOffsetHours && numDays === userData.daysBeforeReminderDelete;
     }
     const handleSubmit= async (e) => {
       e.preventDefault();
@@ -58,8 +58,13 @@ const EditProfile = () =>{
           }, 
           withCredentials:true
           } 
-      );
-      if (response.status===200){
+      ).catch(err =>{
+        if(err?.response?.status===403){
+            setAuth({});
+            navigate('/login');
+        };
+      });
+      if (response?.status===200){
           setAuth({});
           navigate('/register');
       }
@@ -67,12 +72,12 @@ const EditProfile = () =>{
   
     return (
       <div className="parent">
-      <form className="container" onSubmit={e => { handleSubmit(e) }}>
+      <form className="container"  onSubmit={e => { handleSubmit(e) }}>
         <h1 className="title">Account Details</h1>
         <img  className="large-icon" src="user_icon.png" alt="profile"/>
         <label className='label'>Username</label>
         <input 
-          className='edit input editInput'
+          className='input '
           name='username' 
           type='text'
           value={username}
@@ -81,7 +86,7 @@ const EditProfile = () =>{
         <br/>
         <label className='label'>Email</label>
         <input 
-          className='edit input editInput read-only'
+          className='input  read-only'
           name='username' 
           type='text'
           value={email}
@@ -102,7 +107,7 @@ const EditProfile = () =>{
         <br />
         <label className='label'>Days to save old reminders</label>
         <input
-          className='edit input editInput'
+          className='input '
           name='numDays' 
           type='number'
           min={1}
@@ -115,8 +120,8 @@ const EditProfile = () =>{
         <br/>         
         <div className='button-container'>
           <button onClick={deleteAccount} className='btn pink'>
-          <img className="delete small-icon" src="trash_icon.png" alt="delete"/>
-            Delete Account
+            <img className="delete small-icon" src="trash_icon.png" alt="delete"/>
+              Delete Account
           </button>
           <input 
             className='btn'

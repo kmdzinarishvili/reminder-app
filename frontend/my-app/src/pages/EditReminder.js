@@ -5,12 +5,7 @@ import { post } from '../helper/post';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import Labels from '../components/Labels';
-import axios from 'axios';
-import FileUploader from '../components/FileUploader';
-const {REACT_APP_API_BASE_URL: BASE_URL} = process.env;
-const padWithLeadingZeros = (num) =>{
-    return String(num).padStart(2, '0');
-}
+import { padWithLeadingZeros } from '../helper/padWithLeadingZeros';
 
 const EditReminder = () =>{
     const { state } = useLocation();
@@ -38,6 +33,7 @@ const EditReminder = () =>{
     const handleSubmit= async (e) => {
       e.preventDefault();
       console.log(title, recurrence, date, time, priority, category, labels)
+
       const data = {title,recurrence,date,time,priority,category,labels};
       await post({urlExtension:`/reminders/${reminder.id}/update`,
           body:data,
@@ -55,81 +51,93 @@ const EditReminder = () =>{
     }
   
     return (
-      <form onSubmit={e => { handleSubmit(e) }}>
-        <label>Title:</label>
-        <br />
-        <input 
-          name='title' 
-          type='text'
-          value={title}
-          onChange={e => setTitle(e.target.value)}
-        />
-        <br/>
-        <label>Recurrence:</label>
-        <br />
-        <select 
-            id="recurrence"
-            name="recurrence"
-            value={recurrence}
-            onChange={e=> setRecurrence(e.target.value)}>
-            <option value="NEVER">Never</option>
-            <option value="DAILY">Daily</option>
-            <option value="WEEKLY">Weekly</option>
-            <option value="MONTHLY">Monthly</option>
-        </select>
-        <br />
-        <label>Cateogry:</label>
-        <br />
-        <select 
-            id="category"
-            name="category"
-            value={category}
-            onChange={e=> setCategory(e.target.value)}>
-            <option value="WORK">Work</option>
-            <option value="PERSONAL">Personal</option>
-            <option value="EDUCATION">Education</option>
-        </select>
-        <br />
-        <label>Date:</label>
-        <br />
-        <input
-          name='date' 
-          type='date'
-          value={date}
-          onChange={e => setDate(e.target.value)}
-        />
-        <br/>
-        <input
-          name='time' 
-          type='time'
-          value={time}
-          onChange={e => setTime(e.target.value)}
-        />
-        <br/>
-        <label>Priority:</label>
-        <br />
-        <input
-          name='priority' 
-          type='number'
-          min={1}
-          value={priority}
-          onChange={e => setPriority(e.target.value)}
-        />
-        <br/>       
-      
-        <br/>
-        <Labels initLabels={initLabels} setLabels={setLabels}/>
-        {/* <FileUploader setAttachment={setAttachment}/> */}
-        <br/>
-        {errMsg}
-        <br/>
-        <br/>
+      <div className='parent'>
+        <form onSubmit={e => { handleSubmit(e) }} className='container'>
+          <h1 className="title">Edit Reminder</h1>
+          <label className='label'>Title</label>
+          <br />
+          <input 
+            className='input'
+            name='title' 
+            type='text'
+            value={title}
+            onChange={e => setTitle(e.target.value)}
+          />
+          <br/>
+          <label className='label'>Recurrence</label>
+          <br />
+          <select 
+              className='input'
+              id="recurrence"
+              name="recurrence"
+              value={recurrence}
+              onChange={e=> setRecurrence(e.target.value)}>
+              <option value="NEVER">Never</option>
+              <option value="DAILY">Daily</option>
+              <option value="WEEKLY">Weekly</option>
+              <option value="MONTHLY">Monthly</option>
+          </select>
+          <br />
+          <label className='label'>Cateogry</label>
+          <br />
+          <select 
+              className='input'
+              id="category"
+              name="category"
+              value={category}
+              onChange={e=> setCategory(e.target.value)}>
+              <option value="WORK">Work</option>
+              <option value="PERSONAL">Personal</option>
+              <option value="EDUCATION">Education</option>
+          </select>
+          <br />
+          <label className='label'>Date</label>
+          <br />
+          <input
+            className='input'
+            name='date' 
+            type='date'
+            value={date}
+            onChange={e => setDate(e.target.value)}
+          />
+          <br/>
+          <label className='label'>Time</label>
+          <br/>
+          <input
+            className='input'
+            name='time' 
+            type='time'
+            value={time}
+            onChange={e => setTime(e.target.value)}
+          />
+          <br/>
+          <label className='label'>Priority</label>
+          <br />
+          <input
+            className='input'
+            name='priority' 
+            type='number'
+            min={1}
+            value={priority}
+            onChange={e => setPriority(e.target.value)}
+          />
+          <br/>       
+        
+          <br/>
+          <Labels initLabels={initLabels} setLabels={setLabels}/>
+          {/* <FileUploader setAttachment={setAttachment}/> */}
+          <br/>
+          {errMsg}
+          <br/>
+          <br/>
 
-        <input 
-          type='submit' 
-          value='Add Reminder' 
-        />
-      </form>
+          <input 
+            className='input'  
+            type='submit' 
+            value='Save Changes' 
+          />
+        </form>
+      </div>
     )
   }
 
