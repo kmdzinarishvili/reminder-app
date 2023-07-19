@@ -14,8 +14,8 @@ public class UserMapper implements RowMapper<User> {
         resultSet.getString("email"),
         resultSet.getString("password"),
         RoleType.valueOf(resultSet.getString("role")),
-        resultSet.getDate("registration_date"),
-        resultSet.getDate("activity_date"),
+        resultSet.getTimestamp("registration_date")==null? null: resultSet.getTimestamp("registration_date").toLocalDateTime(),
+        resultSet.getTimestamp("activity_date")==null?null:resultSet.getTimestamp("activity_date").toLocalDateTime(),
         resultSet.getFloat("timezone_offset_hours"),
         resultSet.getInt("days_before_reminder_delete"));
   }

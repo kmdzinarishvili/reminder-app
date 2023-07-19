@@ -1,6 +1,9 @@
 package com.lineate.mdzinarishvili.reminderapp.models;//package com.alibou.security.user;
 
 
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -18,21 +21,29 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-
-public class User implements UserDetails {
+public class User implements UserDetails
+{
   private Long id;
-  private String username;
+  private String name;
   private String email;
   private String password;
   private RoleType role;
-  private Date registrationDate;
-  private Date lastActivityDate;
+  private LocalDateTime registrationDate;
+  private LocalDateTime lastActivityDate;
   private float timezoneOffsetHours;
   private int daysBeforeReminderDelete;
 
   public User(Long id) {
     this.id = id;
   }
+
+  public User(Long id, String username, String email) {
+    this.id = id;
+    this.name = username;
+    this.email = email;
+  }
+
+
 
 
   @Override
@@ -43,6 +54,11 @@ public class User implements UserDetails {
   @Override
   public String getPassword() {
     return password;
+  }
+
+  @Override
+  public String getUsername() {
+    return this.email;
   }
 
   @Override

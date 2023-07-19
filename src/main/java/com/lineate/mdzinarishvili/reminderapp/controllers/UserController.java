@@ -1,14 +1,14 @@
 package com.lineate.mdzinarishvili.reminderapp.controllers;
 
-import com.lineate.mdzinarishvili.reminderapp.models.User;
+import com.lineate.mdzinarishvili.reminderapp.dto.UserRequest;
+import com.lineate.mdzinarishvili.reminderapp.dto.UserResponse;
 import com.lineate.mdzinarishvili.reminderapp.services.UserService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping(path = "/api/v1/user")
-
+@PreAuthorize("hasRole('USER')")
 public class UserController {
   private final UserService userService;
 
@@ -16,24 +16,21 @@ public class UserController {
     this.userService = userService;
   }
 
-  @GetMapping("/{id}")
-  public User getUserById(@PathVariable("id") Long id) {
-    return userService.getUser(id);
+  @GetMapping
+  public UserResponse getLoggedInUserData() {
+    return userService.getLoggedInUserData();
   }
 
-  @PostMapping
-  public User addUser(@RequestBody User user) {
-    return userService.addNewUser(user);
-  }
-
-  @DeleteMapping("/{id}")
-  public void deleteUser(@PathVariable("id") Long id) {
-    userService.deleteUser(id);
-  }
 
   @PostMapping("/update")
-  public User updateUser(@RequestBody User user) {
+  public UserResponse updateLoggedInUser(@RequestBody UserRequest user) {
     return userService.updateUser(user);
+  }
+
+
+  @DeleteMapping
+  public void deleteLoggedInUser() {
+    userService.deleteLoggedInUser();
   }
 
 }

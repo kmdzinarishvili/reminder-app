@@ -1,7 +1,15 @@
 package com.lineate.mdzinarishvili.reminderapp.dto;
 
 
+import com.lineate.mdzinarishvili.reminderapp.enums.CategoryType;
+import com.lineate.mdzinarishvili.reminderapp.enums.RecurrenceType;
+import com.lineate.mdzinarishvili.reminderapp.models.Label;
 import com.lineate.mdzinarishvili.reminderapp.models.Reminder;
+import com.lineate.mdzinarishvili.reminderapp.models.User;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.*;
 
 import java.util.Date;
@@ -13,13 +21,23 @@ import java.util.Date;
 @Setter
 @ToString
 public class ReminderResponse {
+  private Long id;
   private String title;
-  private Date date;
+  private LocalDateTime date;
   private byte[] attachment;
+  private RecurrenceType recurrence;
+  private int priority;
+  private CategoryType category;
+  private List<String> labels;
 
   public ReminderResponse(Reminder reminder) {
+    this.id = reminder.getId();
     this.title = reminder.getTitle();
     this.date = reminder.getDate();
     this.attachment = reminder.getAttachment();
+    this.recurrence = reminder.getRecurrence();
+    this.priority = reminder.getPriority();
+    this.category = reminder.getCategory();
+    this.labels = reminder.getLabels().stream().map(Label::getName).collect(Collectors.toList());
   }
 }

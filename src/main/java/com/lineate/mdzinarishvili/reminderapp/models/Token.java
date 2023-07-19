@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 public class Token {
   public Long id;
   public String token;
+
   public TokenType tokenType = TokenType.BEARER;
   public boolean revoked;
   public boolean expired;
@@ -25,5 +26,6 @@ public class Token {
     this.expired = expired;
     this.user = user;
   }
+
 
 }

@@ -14,7 +14,9 @@ public class TokenMapper implements RowMapper<Token> {
         resultSet.getString("token_value"),
         resultSet.getBoolean("revoked"),
         resultSet.getBoolean("expired"),
-        new User(resultSet.getLong("user_id"))
+        new User(resultSet.getLong("user_id"),
+            resultSet.getString("username"),
+            resultSet.getString("email"))
     );
   }
 

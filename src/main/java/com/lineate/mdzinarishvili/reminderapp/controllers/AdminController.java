@@ -1,25 +1,11 @@
 package com.lineate.mdzinarishvili.reminderapp.controllers;
 
-import com.lineate.mdzinarishvili.reminderapp.dao.UserDaoImpl;
 import com.lineate.mdzinarishvili.reminderapp.dto.DeleteUserRequest;
-import com.lineate.mdzinarishvili.reminderapp.dto.UsersRequest;
-import com.lineate.mdzinarishvili.reminderapp.models.User;
-import com.lineate.mdzinarishvili.reminderapp.services.ReminderService;
+import com.lineate.mdzinarishvili.reminderapp.dto.UsersResponse;
 import com.lineate.mdzinarishvili.reminderapp.services.UserService;
-import io.swagger.v3.oas.annotations.Hidden;
 import java.util.List;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-
-//Admin role capabilities:
-//    A user can:
-//
-//    View a list of users. Sort by login,
-//    registration date,
-//    or date of last activity
-//    (creation or marking a reminder as completed).
-//    Delete users.
 
 @RestController
 @RequestMapping("/api/v1/admin")
@@ -31,14 +17,22 @@ public class AdminController {
     this.userService = userService;
   }
 
-  @GetMapping
-  public List<User> getUsers(@RequestBody UsersRequest usersRequest) {
-    return userService.getUsers(usersRequest);
+  @GetMapping("/username")
+  public List<UsersResponse> getUsersByUsername() {
+    return userService.getUsersOrderByUsername();
+  }
+  @GetMapping("/registration")
+  public List<UsersResponse> getUsersByRegistrationDate() {
+    return userService.getUsersOrderByRegistration();
+  }
+  @GetMapping("/activity")
+  public List<UsersResponse> getUsersByLastActivity() {
+    return userService.getUsersOrderByLastActivity();
   }
 
-  @DeleteMapping
-  public boolean delete(@RequestBody DeleteUserRequest deleteUserRequest) {
-    return userService.deleteUser(deleteUserRequest);
+  @DeleteMapping("/{id}")
+  public void delete(@PathVariable("id") Long id) {
+    userService.deleteUser(id);
   }
 
 }
