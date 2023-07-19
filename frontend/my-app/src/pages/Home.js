@@ -19,7 +19,7 @@ const CREATION = '/creation';
 const PRIORITY = '/priority';
 
 
-function NavBar({ setWhichFetch }) {
+function NavBar({ setWhichFetch, style }) {
     const fetchOld = async () =>{
         setWhichFetch("OLD")
     }
@@ -32,7 +32,7 @@ function NavBar({ setWhichFetch }) {
     const fetchThisWeek = async () => {
         setWhichFetch(THIS_WEEK)
     }
-    return <div className="row">
+    return <div className="row" style={style}>
         <button className="nav-item" onClick={fetchOld}>Recently Completed</button>
         <button className="nav-item" onClick={fetchToday}>Today</button>
         <button className="nav-item" onClick={fetchTomorrow}>Tomorrow</button>
@@ -144,44 +144,47 @@ function Home() {
         <section className="page">
             <img onClick={editProfile} className="user-icon icon" src="user_icon.png" alt="profile"/>
             <h1 className="reminders-title">Reminders</h1>
+
             <div className="items-container">
-                {overdueReminders.length>0&&<h4>Overdue: </h4>}
-                <div>
-                    {overdueReminders?.map((reminder)=>
-                        <Reminder key={reminder.id} reminder={reminder} setFetchToggle={setFetchToggle}/>
-                    )}
-                </div>
-                <NavBar setWhichFetch={setWhichFetch} howManyDays={userData.daysBeforeReminderDelete}/>
-                <div className="cont">
-                    <button className="add-btn" onClick={addReminder}>
-                        <img className="small-icon" src="plus_icon.png" alt="edit"/>
-                        Add Reminder
-                    </button>
-                    {whichFetch!=="OLD"&&
-                    <div className="order-by">
-                        <p>Order by:</p>
-                        <input
-                        style={{marginTop:20}}
-                        type="radio"
-                        name="orderby"
-                        value="PRIORITY"
-                        id="priority"
-                        checked={orderBy === PRIORITY}
-                        onChange={()=>setOrderBy(PRIORITY)}
-                        />
-                        <label htmlFor="regular">Priority</label>
-                        <input
-                        style={{marginTop:20}}
-                        type="radio"
-                        name="orderby"
-                        value="CREATION"
-                        id="creation"
-                        checked={orderBy === CREATION}
-                        onChange={()=>setOrderBy(CREATION)}
-                        />
-                        <label htmlFor="regular">Creation Date</label>
-                    </div>}
-                </div>
+                <div className="reminder-cont">
+                    {overdueReminders.length>0&&<h4>Overdue: </h4>}
+                            {overdueReminders?.map((reminder)=>
+                            <Reminder key={reminder.id} reminder={reminder} setFetchToggle={setFetchToggle}/>
+                        )}
+                    </div>
+                        <NavBar style={{alignSelf:'center'}}setWhichFetch={setWhichFetch} howManyDays={userData.daysBeforeReminderDelete}/>
+                        <div className="cont">
+
+                        <button className="add-btn" onClick={addReminder}>
+                            <img className="small-icon" src="plus_icon.png" alt="edit"/>
+                            Add Reminder
+                        </button>
+                        {whichFetch!=="OLD"&&
+                        <div className="order-by">
+                            <p>Order by:</p>
+                            <input
+                            style={{marginTop:20}}
+                            type="radio"
+                            name="orderby"
+                            value="PRIORITY"
+                            id="priority"
+                            checked={orderBy === PRIORITY}
+                            onChange={()=>setOrderBy(PRIORITY)}
+                            />
+                            <label htmlFor="regular">Priority</label>
+                            <input
+                            style={{marginTop:20}}
+                            type="radio"
+                            name="orderby"
+                            value="CREATION"
+                            id="creation"
+                            checked={orderBy === CREATION}
+                            onChange={()=>setOrderBy(CREATION)}
+                            />
+                            <label htmlFor="regular">Creation Date</label>
+                        </div>}
+                        </div>
+               
             
             </div>
             <div className="reminder-cont">

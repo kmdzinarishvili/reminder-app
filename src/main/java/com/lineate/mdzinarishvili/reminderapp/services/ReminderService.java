@@ -20,6 +20,7 @@ import java.time.ZoneOffset;
 import java.time.chrono.ChronoLocalDate;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -244,8 +245,10 @@ public class ReminderService {
           break;
       }
     });
-    return oldReminders.stream().map(ReminderResponse::new).collect(
+    List<ReminderResponse> res =  oldReminders.stream().map(ReminderResponse::new).collect(
         Collectors.toList());
+    Collections.reverse(res);
+    return res;
   }
   private boolean checkUpcomingNeverReminder(Reminder reminder, LocalDateTime date ){
     return reminder.getDate().toLocalDate().equals(date.toLocalDate())&&

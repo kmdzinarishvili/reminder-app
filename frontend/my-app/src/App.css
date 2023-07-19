@@ -193,10 +193,11 @@ input{
 
 .cont{
   display: flex;
-  width: '100%';
   justify-content: space-between;
   align-items: center;
   margin-top: 5px;
+  width:838px;
+  align-self: center;
 }
 .pink{
   background-color: lightpink;

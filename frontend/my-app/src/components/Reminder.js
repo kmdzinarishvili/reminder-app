@@ -19,7 +19,7 @@ function toTitleCase(str) {
 
 const Reminder = ({reminder, setFetchToggle, isCompleted}) =>{
     const {auth,setAuth} = useAuth();
-    const {id, date, title, recurrence, priority, labels} = reminder;
+    const {id, date, title, recurrence, priority, labels, category} = reminder;
     const formattedDate = `${date[2]}/${date[1]}/${date[0]}`
     const formattedTime = `${padWithLeadingZeros(date[3])}:${padWithLeadingZeros(date[4])}`
     const navigate = useNavigate();
@@ -66,15 +66,14 @@ const Reminder = ({reminder, setFetchToggle, isCompleted}) =>{
                 <img className="check icon" src="check_icon.png" alt="complete"/>
             </div>
         }
-        <p style={{minWidth:400}}>{title}</p>
+        <p style={{minWidth:350}}>{title}</p>
+        <p style={{minWidth:200}}>{toTitleCase(category)}</p>
         <p style={{minWidth:100}}>{recurrence==="NEVER"?"One Time": toTitleCase(recurrence)}</p>
         <p style={{minWidth:200}}>{!isCompleted && <span>{formattedDate} {formattedTime} </span>} </p>
         <p style={{minWidth:150}}> Priority: {priority}</p>
         {labels.length>0&& 
             <p> Labels: {labels.map(l=>{
-                // return toTitleCase(l)
-                return l;
-                
+                return toTitleCase(l)
             }).toString()}</p>
         }
         <div className='delete-cont'>
